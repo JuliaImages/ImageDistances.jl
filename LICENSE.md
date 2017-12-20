@@ -1,6 +1,6 @@
 The ImageDistances.jl package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2017: <NAME>.
+> Copyright (c) 2017: Júlio Hoffimann Mendes <juliohm@stanford.edu>
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
