@@ -3,6 +3,7 @@ __precompile__()
 module ImageDistances
 
 using Distances
+import Distances: evaluate
 
 include("hausdorff.jl")
 
