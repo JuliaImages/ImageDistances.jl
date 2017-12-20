@@ -1,5 +1,13 @@
+__precompile__()
+
 module ImageDistances
 
-# package code goes here
+using Distances
+
+include("hausdorff.jl")
+
+export
+  # distances
+  Hausdorff
 
 end # module
