@@ -78,3 +78,7 @@ end
 
 evaluate(d::Hausdorff, imgA::AbstractArray, imgB::AbstractArray) =
     evaluate(d, PointSet(imgA), PointSet(imgB))
+
+# helper functions
+hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(Hausdorff(), imgA, imgB)
+modified_hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(ModifiedHausdorff(), imgA, imgB)

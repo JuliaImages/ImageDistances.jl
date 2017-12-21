@@ -10,8 +10,12 @@ import Distances: evaluate
 include("hausdorff.jl")
 
 export
-  # distances
+  # distance types
   Hausdorff,
-  ModifiedHausdorff
+  ModifiedHausdorff,
+
+  # helper functions
+  hausdorff,
+  modified_hausdorff
 
 end # module
