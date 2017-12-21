@@ -28,7 +28,7 @@ d = ModifiedHausdorff()
 # distance between the two images
 evaluate(d, imgA, imgB)
 
-#
+# two lists of images
 imgsA = [imgA, imgB, ...]
 imgsB = [imgB, imgA, ...]
 
@@ -44,8 +44,8 @@ functions instead of naively looping over a collection of images and calling `ev
 
 ## Distances
 
-| *distance* | *references* |
-|------------|--------------|
+| Distance | References |
+|----------|------------|
 | `Hausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
 
 ## Contributing
