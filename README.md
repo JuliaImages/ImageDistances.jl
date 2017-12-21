@@ -14,9 +14,39 @@ Get the latest stable release with Julia's package manager:
 Pkg.add("ImageDistances")
 ```
 
+## Usage
+
+Given two N-dimensional images `imgA` and `imgB`, and any of the distances `d` defined in this package,
+we can evaluate the following expressions:
+
+```julia
+using Distances
+using ImageDistances
+
+d = ModifiedHausdorff()
+
+# distance between the two images
+evaluate(d, imgA, imgB)
+
+#
+imgsA = [imgA, imgB, ...]
+imgsB = [imgB, imgA, ...]
+
+# distance between the "columns"
+colwise(d, imgsA, imgsB)
+
+# distance between every combination of 2
+pairwise(d, imgsA, imgsB)
+```
+
+Like in Distances.jl, huge performance gains are obtained by calling the `colwise` and `pairwise`
+functions instead of naively looping over a collection of images and calling `evaluate`.
+
 ## Distances
 
-TODO
+| *distance* | *references* |
+|------------|--------------|
+| `Hausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
 
 ## Contributing
 
