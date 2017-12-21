@@ -46,10 +46,11 @@ functions instead of naively looping over a collection of images and calling `ev
 
 | Distance | References |
 |----------|------------|
-| `Hausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
+| `Hausdorff` and `ModifiedHausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
 
 ## Contributing
 
-Contributions are very welcome, as are feature requests and suggestions. Please
-[open an issue](https://github.com/juliohm/ImageDistances.jl/issues) if you encounter
+Contributions are very welcome, as are feature requests and suggestions.
+
+Please [open an issue](https://github.com/juliohm/ImageDistances.jl/issues) if you encounter
 any problems.
