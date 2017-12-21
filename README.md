@@ -46,7 +46,7 @@ functions instead of naively looping over a collection of images and calling `ev
 
 | Distance type | Convenient syntax | References |
 |----------|------------------------|------------|
-| `Hausdorff` and `ModifiedHausdorff` | `hausdorff` and `modified_hausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
+| `Hausdorff` and `ModifiedHausdorff` | `hausdorff(imgA,imgB)` and `modified_hausdorff(imgA,imgB)` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
 
 ## Contributing
 
