@@ -35,8 +35,8 @@ imgsB = [imgB, imgA, ...]
 # distance between the "columns"
 colwise(d, imgsA, imgsB)
 
-# distance between every combination of 2
-pairwise(d, imgsA, imgsB)
+# distance between every pair
+pairwise(d, imgsA)
 ```
 
 Like in Distances.jl, huge performance gains are obtained by calling the `colwise` and `pairwise`
@@ -44,9 +44,9 @@ functions instead of naively looping over a collection of images and calling `ev
 
 ## Distances
 
-| Distance | References |
-|----------|------------|
-| `Hausdorff` and `ModifiedHausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
+| Distance type | Convenient syntax | References |
+|----------|------------------------|------------|
+| `Hausdorff` and `ModifiedHausdorff` | `hausdorff` and `modified_hausdorff` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching |
 
 ## Contributing
 
