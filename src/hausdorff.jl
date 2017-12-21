@@ -42,8 +42,6 @@ struct Hausdorff{I<:ReductionOperation,O<:ReductionOperation} <: Metric
     outer_op::O
 end
 
-Hausdorff(inner_op, outer_op) = Hausdorff{typeof(inner_op),typeof(outer_op)}(inner_op, outer_op)
-
 # original definition as it first appeared in the literature
 Hausdorff() = Hausdorff(MinReduction(), MaxReduction())
 
