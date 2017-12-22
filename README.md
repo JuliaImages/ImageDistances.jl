@@ -1,7 +1,7 @@
 # ImageDistances.jl
 
 [![Build Status](https://travis-ci.org/JuliaImages/ImageDistances.jl.svg?branch=master)](https://travis-ci.org/JuliaImages/ImageDistances.jl)
-[![Coverage Status](https://coveralls.io/repos/JuliaImages/ImageDistances.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/JuliaImages/ImageDistances.jl?branch=master)
+[![ImageDistances](http://pkg.julialang.org/badges/ImageDistances_0.6.svg)](http://pkg.julialang.org/?pkg=ImageDistances)
 [![codecov.io](http://codecov.io/github/JuliaImages/ImageDistances.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaImages/ImageDistances.jl?branch=master)
 
 Distances between images following the [Distances.jl](https://github.com/JuliaStats/Distances.jl) API.
@@ -35,7 +35,8 @@ imgsB = [imgB, imgA, ...]
 # distance between the "columns"
 colwise(d, imgsA, imgsB)
 
-# distance between every pair
+# distance between every pair of images
+pairwise(d, imgsA, imgsB)
 pairwise(d, imgsA)
 ```
 
