@@ -16,16 +16,13 @@ Pkg.add("ImageDistances")
 
 ## Usage
 
-Given two N-dimensional images `imgA` and `imgB`, and any of the distances `d` defined in this package,
-we can evaluate the following expressions:
-
 ```julia
 using Distances
 using ImageDistances
 
 d = ModifiedHausdorff()
 
-# distance between the two images
+# distance between two images
 evaluate(d, imgA, imgB)
 
 # two lists of images
