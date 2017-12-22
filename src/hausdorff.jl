@@ -84,9 +84,30 @@ function pairwise(d::Hausdorff,
     for j=1:n
       bs = ptsB[j]
       sizeB = sizesB[j]
-      for i=j+1:m
+      for i=1:m
         as = ptsA[i]
         sizeA = sizesA[i]
+        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+      end
+    end
+
+    D
+end
+
+function pairwise(D::Hausdorff, imgs::AbstractVector{IMG}) where {IMG<:AbstractArray}
+
+    pts = [find(img) for img in imgs]
+    sizes = [size(img) for img in imgs]
+
+    n = length(imgs)
+
+    D = zero(n, n)
+    for j=1:n
+      bs = pts[j]
+      sizeB = sizes[j]
+      for i=j+1:n
+        as = pts[i]
+        sizeA = sizes[i]
         D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
       end
       # nothing to be done to the diagonal (always zero)

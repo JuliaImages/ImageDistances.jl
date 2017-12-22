@@ -30,22 +30,36 @@ abstract type ImageMetric <: ImageSemiMetric end
 function colwise(d::ImagePreMetric,
                  imgsA::AbstractVector{IMG},
                  imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
-
-    @assert length(imgsA) == length(imgsB) "vectors with images must have same length"
-
     [evaluate(d, imgA, imgB) for (imgA, imgB) in zip(imgsA, imgsB)]
 end
 
 function pairwise(d::ImagePreMetric,
                   imgsA::AbstractVector{IMG},
                   imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
-
     m, n = length(imgsA), length(imgsB)
     D = zeros(m, n)
     for j=1:n
       imgB = imgsB[j]
-      for i=j+1:m
+      for i=1:m
         imgA = imgsA[i]
+        @inbounds D[i,j] = evaluate(d, imgA, imgB)
+      end
+    end
+
+    D
+end
+
+pairwise(d::ImagePreMetric, imgs::AbstractArray{IMG}) where {IMG<:AbstractArray} =
+    pairwise(d, imgs, imgs)
+
+# exploit symmetry of semimetric
+function pairwise(d::ImageSemiMetric, imgs::AbstractArray{IMG}) where {IMG<:AbstractArray}
+    n = length(imgs)
+    D = zeros(n, n)
+    for j=1:n
+      imgB = imgs[j]
+      for i=j+1:n
+        imgA = imgs[i]
         @inbounds D[i,j] = evaluate(d, imgA, imgB)
       end
       # nothing to be done to the diagonal (always zero)
@@ -56,6 +70,3 @@ function pairwise(d::ImagePreMetric,
 
     D
 end
-
-pairwise(d::ImagePreMetric, imgs::AbstractArray{IMG}) where {IMG<:AbstractArray} =
-    pairwise(d, imgs, imgs)
