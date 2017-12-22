@@ -5,17 +5,23 @@ module ImageDistances
 import Base: size, ==
 
 using Distances
-import Distances: evaluate
+import Distances: evaluate, colwise, pairwise
 
+include("generic.jl")
 include("hausdorff.jl")
 
 export
-  # distance types
-  Hausdorff,
-  ModifiedHausdorff,
+    # generic types
+    ImagePreMetric,
+    ImageSemiMetric,
+    ImageMetric,
 
-  # helper functions
-  hausdorff,
-  modified_hausdorff
+    # concrete types
+    Hausdorff,
+    ModifiedHausdorff,
+
+    # helper functions
+    hausdorff,
+    modified_hausdorff
 
 end # module

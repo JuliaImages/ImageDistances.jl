@@ -37,7 +37,7 @@ and outer reduction `outer_op`.
 Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
 Object-Matching.
 """
-struct Hausdorff{I<:ReductionOperation,O<:ReductionOperation} <: Metric
+struct Hausdorff{I<:ReductionOperation,O<:ReductionOperation} <: ImageMetric
     inner_op::I
     outer_op::O
 end
