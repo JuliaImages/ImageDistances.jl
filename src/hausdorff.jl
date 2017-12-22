@@ -94,14 +94,14 @@ function pairwise(d::Hausdorff,
     D
 end
 
-function pairwise(D::Hausdorff, imgs::AbstractVector{IMG}) where {IMG<:AbstractArray}
+function pairwise(d::Hausdorff, imgs::AbstractVector{IMG}) where {IMG<:AbstractArray}
 
     pts = [find(img) for img in imgs]
     sizes = [size(img) for img in imgs]
 
     n = length(imgs)
 
-    D = zero(n, n)
+    D = zeros(n, n)
     for j=1:n
       bs = pts[j]
       sizeB = sizes[j]

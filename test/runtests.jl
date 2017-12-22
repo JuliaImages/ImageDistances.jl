@@ -32,7 +32,13 @@ evaluate(d::MyImgDist, imgA, imgB) = π
 
         A = rand([0,1],10,10)
         B = rand([0,1],10,10)
+        C = rand([0,1],10,10)
         @test hausdorff(A,B) ≥ 0
         @test modified_hausdorff(A,B) ≥ 0
+
+        imgs = [A, B, C]
+        D1 = pairwise(Hausdorff(), imgs, imgs)
+        D2 = pairwise(Hausdorff(), imgs)
+        @test D1 == D2
     end
 end
