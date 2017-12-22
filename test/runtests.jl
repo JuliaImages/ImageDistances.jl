@@ -15,9 +15,11 @@ evaluate(d::MyImgDist, imgA, imgB) = π
       ds = colwise(MyImgDist(), imgs, imgs)
       @test all(ds .== π)
 
-      D = pairwise(MyImgDist(), imgs)
-      @test issymmetric(D)
-      @test Set(D) == Set([0.,π])
+      D1 = pairwise(MyImgDist(), imgs, imgs)
+      D2 = pairwise(MyImgDist(), imgs)
+      @test D1 == D2
+      @test issymmetric(D1)
+      @test Set(D1) == Set([0.,π])
     end
 
     @testset "Hausdorff" begin

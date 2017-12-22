@@ -40,7 +40,11 @@ function pairwise(d::ImagePreMetric,
     D = zeros(m, n)
     for j=1:n
       imgB = imgsB[j]
-      for i=1:m
+      for i=1:j-1
+        imgA = imgsA[i]
+        @inbounds D[i,j] = evaluate(d, imgA, imgB)
+      end
+      for i=j+1:m
         imgA = imgsA[i]
         @inbounds D[i,j] = evaluate(d, imgA, imgB)
       end

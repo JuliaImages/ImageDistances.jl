@@ -84,7 +84,12 @@ function pairwise(d::Hausdorff,
     for j=1:n
       bs = ptsB[j]
       sizeB = sizesB[j]
-      for i=1:m
+      for i=1:j-1
+        as = ptsA[i]
+        sizeA = sizesA[i]
+        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+      end
+      for i=j+1:m
         as = ptsA[i]
         sizeA = sizesA[i]
         D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
