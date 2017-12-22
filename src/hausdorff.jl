@@ -1,17 +1,4 @@
 """
-    PointSet(img)
-
-A minimal interface that treats binary images as point sets.
-"""
-struct PointSet{A<:AbstractArray}
-    img::A
-end
-
-==(A::PointSet, B::PointSet) = A.img == B.img
-size(A::PointSet) = size(A.img)
-points(A::PointSet) = find(A.img)
-
-"""
     ReductionOperation
 
 A reduction operation on a set of values (e.g. maximum).
@@ -48,11 +35,12 @@ Hausdorff() = Hausdorff(MinReduction(), MaxReduction())
 # modified (fast) Hausdorff distance proposed by Dubuisson, M-P et al. 1994
 ModifiedHausdorff() = Hausdorff(MeanReduction(), MaxReduction())
 
-function evaluate(d::Hausdorff, A::PointSet, B::PointSet)
-    # trivial case
-    A == B && return 0.
-
-    as, bs = points(A), points(B)
+function evaluate(d::Hausdorff,
+                  as::AbstractVector, bs::AbstractVector,
+                  sizeA::Tuple, sizeB::Tuple)
+    # trivial cases
+    sizeA ≠ sizeB && return 0.
+    as == bs && return 0.
 
     # return if there is no object to match
     (isempty(as) || isempty(bs)) && return Inf
@@ -61,22 +49,51 @@ function evaluate(d::Hausdorff, A::PointSet, B::PointSet)
 
     D = zeros(m, n)
     for j=1:n
-        b = [ind2sub(size(B), bs[j])...]
+        b = [ind2sub(sizeB, bs[j])...]
         for i=1:m
-            a = [ind2sub(size(A), as[i])...]
-            @inbounds D[i,j] = norm(a - b)
+            a = [ind2sub(sizeA, as[i])...]
+            @inbounds D[i,j] = euclidean(a, b)
         end
     end
 
     dAB = reduce(d.inner_op, minimum(D, 2))
     dBA = reduce(d.inner_op, minimum(D, 1))
 
-    reduce(d.outer_op, [dAB, dBA])
+    reduce(d.outer_op, (dAB, dBA))
 end
 
 evaluate(d::Hausdorff, imgA::AbstractArray, imgB::AbstractArray) =
-    evaluate(d, PointSet(imgA), PointSet(imgB))
+    evaluate(d, find(imgA), find(imgB), size(imgA), size(imgB))
 
 # helper functions
 hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(Hausdorff(), imgA, imgB)
 modified_hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(ModifiedHausdorff(), imgA, imgB)
+
+function pairwise(d::Hausdorff,
+                  imgsA::AbstractVector{IMG},
+                  imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
+
+    ptsA = [find(imgA) for imgA in imgsA]
+    ptsB = [find(imgB) for imgB in imgsB]
+    sizesA = [size(imgA) for imgA in imgsA]
+    sizesB = [size(imgB) for imgB in imgsB]
+
+    m, n = length(imgsA), length(imgsB)
+
+    D = zeros(m, n)
+    for j=1:n
+      bs = ptsB[j]
+      sizeB = sizesB[j]
+      for i=j+1:m
+        as = ptsA[i]
+        sizeA = sizesA[i]
+        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+      end
+      # nothing to be done to the diagonal (always zero)
+      for i=1:j-1
+        D[i,j] = D[j,i] # leverage the symmetry
+      end
+    end
+
+    D
+end
