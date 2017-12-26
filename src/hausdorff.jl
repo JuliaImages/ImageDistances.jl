@@ -35,26 +35,19 @@ Hausdorff() = Hausdorff(MinReduction(), MaxReduction())
 # modified (fast) Hausdorff distance proposed by Dubuisson, M-P et al. 1994
 ModifiedHausdorff() = Hausdorff(MeanReduction(), MaxReduction())
 
-function evaluate(d::Hausdorff,
-                  as::AbstractVector, bs::AbstractVector,
-                  sizeA::Tuple, sizeB::Tuple)
+# convert binary image to a point set format
+function img2pset(img)
+    inds = find(img)
+    sz = size(img)
+    hcat([[ind2sub(sz, ind)...] for ind in inds]...)
+end
+
+function evaluate_pset(d::Hausdorff, psetA, psetB)
     # trivial cases
-    sizeA ≠ sizeB && return 0.
-    as == bs && return 0.
+    psetA == psetB && return 0.
+    (isempty(psetA) || isempty(psetA)) && return Inf
 
-    # return if there is no object to match
-    (isempty(as) || isempty(bs)) && return Inf
-
-    m, n = length(as), length(bs)
-
-    D = zeros(m, n)
-    for j=1:n
-        b = [ind2sub(sizeB, bs[j])...]
-        for i=1:m
-            a = [ind2sub(sizeA, as[i])...]
-            @inbounds D[i,j] = euclidean(a, b)
-        end
-    end
+    D = pairwise(Euclidean(), psetA, psetB)
 
     dAB = reduce(d.inner_op, minimum(D, 2))
     dBA = reduce(d.inner_op, minimum(D, 1))
@@ -63,7 +56,7 @@ function evaluate(d::Hausdorff,
 end
 
 evaluate(d::Hausdorff, imgA::AbstractArray, imgB::AbstractArray) =
-    evaluate(d, find(imgA), find(imgB), size(imgA), size(imgB))
+    evaluate_pset(d, img2pset(imgA), img2pset(imgB))
 
 # helper functions
 hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(Hausdorff(), imgA, imgB)
@@ -73,26 +66,26 @@ function pairwise(d::Hausdorff,
                   imgsA::AbstractVector{IMG},
                   imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
 
-    ptsA = [find(imgA) for imgA in imgsA]
-    ptsB = [find(imgB) for imgB in imgsB]
-    sizesA = [size(imgA) for imgA in imgsA]
-    sizesB = [size(imgB) for imgB in imgsB]
+    psetsA = [img2pset(imgA) for imgA in imgsA]
+    psetsB = [img2pset(imgB) for imgB in imgsB]
 
     m, n = length(imgsA), length(imgsB)
 
+    nelm = m*n - min(m, n)
+    p = Progress(nelm, 1, "Evaluating Hausdorff...")
+
     D = zeros(m, n)
     for j=1:n
-      bs = ptsB[j]
-      sizeB = sizesB[j]
+      psetB = psetsB[j]
       for i=1:j-1
-        as = ptsA[i]
-        sizeA = sizesA[i]
-        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+        psetA = psetsA[i]
+        D[i,j] = evaluate_pset(d, psetA, psetB)
+        next!(p)
       end
       for i=j+1:m
-        as = ptsA[i]
-        sizeA = sizesA[i]
-        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+        psetA = psetsA[i]
+        D[i,j] = evaluate_pset(d, psetA, psetB)
+        next!(p)
       end
     end
 
@@ -101,19 +94,20 @@ end
 
 function pairwise(d::Hausdorff, imgs::AbstractVector{IMG}) where {IMG<:AbstractArray}
 
-    pts = [find(img) for img in imgs]
-    sizes = [size(img) for img in imgs]
+    psets = [img2pset(img) for img in imgs]
 
     n = length(imgs)
 
+    nelm = (n*(n-1)) ÷ 2
+    p = Progress(nelm, 1, "Evaluating Hausdorff...")
+
     D = zeros(n, n)
     for j=1:n
-      bs = pts[j]
-      sizeB = sizes[j]
+      psetB = psets[j]
       for i=j+1:n
-        as = pts[i]
-        sizeA = sizes[i]
-        D[i,j] = evaluate(d, as, bs, sizeA, sizeB)
+        psetA = psets[i]
+        D[i,j] = evaluate_pset(d, psetA, psetB)
+        next!(p)
       end
       # nothing to be done to the diagonal (always zero)
       for i=1:j-1

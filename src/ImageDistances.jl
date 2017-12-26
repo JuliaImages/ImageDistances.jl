@@ -8,6 +8,7 @@ using Distances
 import Distances: evaluate, colwise, pairwise
 
 using Colors
+using ProgressMeter
 
 include("generic.jl")
 include("hausdorff.jl")
