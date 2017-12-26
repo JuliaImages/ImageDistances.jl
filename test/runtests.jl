@@ -1,4 +1,5 @@
-using Distances # export evaluate, colwise, pairwise
+using Distances
+using Colors
 using ImageDistances
 using Base.Test
 
@@ -42,5 +43,13 @@ evaluate(d::MyImgDist, imgA, imgB) = π
         D1 = pairwise(Hausdorff(), imgs, imgs)
         D2 = pairwise(Hausdorff(), imgs)
         @test D1 == D2
+    end
+
+    @testset "CIEDE2000" begin
+      A = Gray.(rand(100,100))
+      B = Gray.(rand(100,100))
+
+      @test ciede2000(A, B) ≥ 0
+      @test ciede2000(A, B) == ciede2000(B, A)
     end
 end
