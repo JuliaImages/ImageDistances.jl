@@ -11,7 +11,7 @@ Sharma, G., Wu, W., and Dalal, E. N., 2005.
 The CIEDE2000 color‐difference formula.
 """
 struct CIEDE2000{M<:ColorMetric} <: ImageSemiMetric
-  metric::M
+    metric::M
 end
 
 CIEDE2000() = CIEDE2000(DE_2000())
