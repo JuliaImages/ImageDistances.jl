@@ -1,7 +1,8 @@
-using Distances
 using Colors
+using Distances
 using ImageDistances
-using Base.Test
+using LinearAlgebra: I, issymmetric
+using Test
 
 # define a dummy distance to test generic
 # colwise and pairwise (coverage purposes)
@@ -11,7 +12,7 @@ evaluate(d::MyImgDist, imgA, imgB) = π
 
 @testset "ImageDistances.jl" begin
     @testset "Generic" begin
-      imgs = [eye(3), ones(3,3), zeros(3,3)]
+      imgs = [Matrix(1.0I,3,3), ones(3,3), zeros(3,3)]
 
       ds = colwise(MyImgDist(), imgs, imgs)
       @test all(ds .== π)
@@ -24,7 +25,7 @@ evaluate(d::MyImgDist, imgA, imgB) = π
     end
 
     @testset "Hausdorff" begin
-        A = eye(3); B = copy(A); C = copy(A)
+        A = Matrix(1.0I,3,3); B = copy(A); C = copy(A)
         B[1,2] = 1; C[1,3] = 1
         @test hausdorff(A,A) == 0
         @test hausdorff(A,B) == hausdorff(B,A)

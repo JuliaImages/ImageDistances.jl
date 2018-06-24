@@ -37,9 +37,8 @@ ModifiedHausdorff() = Hausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to a point set format
 function img2pset(img)
-    inds = find(img)
-    sz = size(img)
-    hcat([[ind2sub(sz, ind)...] for ind in inds]...)
+    inds = findall(!iszero, img)
+    [inds[j][i] for i=1:ndims(img), j=1:length(inds)]
 end
 
 function evaluate_pset(d::Hausdorff, psetA, psetB)
@@ -49,8 +48,8 @@ function evaluate_pset(d::Hausdorff, psetA, psetB)
 
     D = pairwise(Euclidean(), psetA, psetB)
 
-    dAB = reduce(d.inner_op, minimum(D, 2))
-    dBA = reduce(d.inner_op, minimum(D, 1))
+    dAB = reduce(d.inner_op, minimum(D, dims=2))
+    dBA = reduce(d.inner_op, minimum(D, dims=1))
 
     reduce(d.outer_op, (dAB, dBA))
 end
