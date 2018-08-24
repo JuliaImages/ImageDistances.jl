@@ -10,7 +10,7 @@ struct MeanReduction <: ReductionOperation end
 struct MaxReduction  <: ReductionOperation end
 
 reduce(op::MinReduction, x)  = minimum(x)
-reduce(op::MeanReduction, x) = mean(x)
+reduce(op::MeanReduction, x) = sum(x) / length(x)
 reduce(op::MaxReduction, x)  = maximum(x)
 
 """

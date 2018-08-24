@@ -9,7 +9,6 @@ import Distances: evaluate, colwise, pairwise
 
 using Colors
 using ProgressMeter
-using Statistics: mean
 
 include("generic.jl")
 include("hausdorff.jl")
