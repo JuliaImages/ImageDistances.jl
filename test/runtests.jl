@@ -53,4 +53,25 @@ evaluate(d::MyImgDist, imgA, imgB) = π
       @test ciede2000(A, B) ≥ 0
       @test ciede2000(A, B) == ciede2000(B, A)
     end
+
+    @testset "Earth Mover" begin
+        edges = 0.0:0.2:1.0
+        metric = EarthMoverBinned(edges)
+        imgA = fill(0.1, 5, 5)
+        imgB = fill(0.3, 5, 5)
+        @test evaluate(metric, imgA, imgA) == 0
+        @test evaluate(metric, imgB, imgB) == 0
+        # Since A and B are on opposite sides of the bin boundary, the cost should be 0
+        # (i.e., epsilon)
+        @test evaluate(metric, imgA, imgB) < 1e-8
+        imgB = fill(0.5, 5, 5)
+        @test evaluate(metric, imgA, imgB) ≈ step(edges)
+        imgB = [fill(0.1, 5) fill(0.3, 5) fill(0.5, 5) fill(0.7, 5) fill(0.9, 5)]
+        @test evaluate(metric, imgA, imgB) ≈ (5 + 10 + 15) * step(edges) / 25
+        # Images don't have to be the same size
+        imgB = [fill(0.1, 10) fill(0.3, 10) fill(0.5, 10) fill(0.7, 10) fill(0.9, 10)]
+        @test evaluate(metric, imgA, imgB) ≈ 5 * step(edges) / 25
+        imgB = [fill(0.9, 10) fill(0.3, 10) fill(0.7, 10) fill(0.7, 10) fill(0.9, 10)]
+        @test evaluate(metric, imgA, imgB) ≈ 15*(2*step(edges))/25
+    end
 end
