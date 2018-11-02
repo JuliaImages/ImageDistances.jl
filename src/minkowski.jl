@@ -34,14 +34,14 @@ function evaluate(d::Minkowski, imgA::AbstractArray, imgB::AbstractArray)::Real
 end
 
 """
-    minkowski(imgA, imgB, order::Real)
     minkowski(imgA, imgB, metric::Minkowski)
+    minkowski(imgA, imgB, [order = 2])
 
 minkowski distance of order p
 
 See also: [`Minkowski`](@ref)
 """
-minkowski(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski = Minkowski(2)) = evaluate(metric, imgA, imgB)
+minkowski(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski) = evaluate(metric, imgA, imgB)
 minkowski(imgA::AbstractArray, imgB::AbstractArray, order::Real = 2) = evaluate(Minkowski(order), imgA, imgB)
 
 """
