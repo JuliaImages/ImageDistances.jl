@@ -4,7 +4,7 @@
 Minkowski distance of order p
 
 ```math
-D(X,Y) = (\\sum_i^n \\left|X_i - Y_i\\right|^p)^{1/p}
+D(X,Y) = (\\sum_{i=1}^n \\left|X_i - Y_i\\right|^p)^{1/p}
 ```
 
 """
@@ -63,14 +63,13 @@ See also: [`minkowski`](@ref)
 mse(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 2) / length(imgA)
 
 """
-    psnr(imgA, imgB, maxvalue)
+    psnr(imgA, imgB, [maxvalue=1])
 
 peak signal to noise ratio
 
+```math
+    psnr = 10log_{10}\\big(\\frac{MAX_I^2}{MSE}\\big)
+```
+
 """
 psnr(imgA::AbstractArray, imgB::AbstractArray, maxvalue = 1) = 10*log10(maxvalue^2 / mse(imgA, imgB))
-
-# psnr(imgA::AbstractArray{RGB{T}}, imgB::AbstractArray{RGB}) where T <: Normed = psnr(imgA, imgB, 1)
-# psnr(imgA::AbstractArray{RGB}, imgB::AbstractArray{RGB{S}}) where S <: Normed = psnr(imgA, imgB, 1)
-# psnr(imgA::AbstractArray{Gray{T}}, imgB::AbstractArray{Gray}) where T <: Normed = psnr(imgA, imgB, 1)
-# psnr(imgA::AbstractArray{Gray}, imgB::AbstractArray{Gray{S}}) where S <: Normed = psnr(imgA, imgB, 1)
