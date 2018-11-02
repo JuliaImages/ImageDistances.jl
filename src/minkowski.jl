@@ -68,7 +68,7 @@ mse(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 2) / len
 peak signal to noise ratio
 
 """
-psnr(imgA::AbstractArray, imgB::AbstractArray, maxvalue) = 10*log10(maxvalue^2 / mse(imgA, imgB))
+psnr(imgA::AbstractArray, imgB::AbstractArray, maxvalue = 1) = 10*log10(maxvalue^2 / mse(imgA, imgB))
 
 # psnr(imgA::AbstractArray{RGB{T}}, imgB::AbstractArray{RGB}) where T <: Normed = psnr(imgA, imgB, 1)
 # psnr(imgA::AbstractArray{RGB}, imgB::AbstractArray{RGB{S}}) where S <: Normed = psnr(imgA, imgB, 1)
