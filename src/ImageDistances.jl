@@ -24,10 +24,16 @@ export
     Hausdorff,
     ModifiedHausdorff,
     CIEDE2000,
+    Minkowski,
 
     # helper functions
     hausdorff,
     modified_hausdorff,
-    ciede2000
+    ciede2000,
+    minkowski,
+    minkowski_p,
+    mae,
+    mse,
+    psnr
 
 end # module
