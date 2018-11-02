@@ -1,5 +1,5 @@
 """
-	Minkowski(order::Real)
+    Minkowski(order::Real)
 
 Minkowski distance of order p
 
@@ -13,7 +13,7 @@ struct Minkowski <: ImageDistances.ImageMetric
 end
 
 """
-	minkowski_p(d::Minkowski, imgA, imgB)
+    minkowski_p(d::Minkowski, imgA, imgB)
 
 minkowski distance to p-th power
 
@@ -34,8 +34,8 @@ function evaluate(d::Minkowski, imgA::AbstractArray, imgB::AbstractArray)::Real
 end
 
 """
-	minkowski(imgA, imgB, order::Real)
-	minkowski(imgA, imgB, metric::Minkowski)
+    minkowski(imgA, imgB, order::Real)
+    minkowski(imgA, imgB, metric::Minkowski)
 
 minkowski distance of order p
 
@@ -45,7 +45,7 @@ minkowski(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski = Minkowsk
 minkowski(imgA::AbstractArray, imgB::AbstractArray, order::Real = 2) = evaluate(Minkowski(order), imgA, imgB)
 
 """
-	mae(imgA, imgB)
+    mae(imgA, imgB)
 
 mean absolute error
 
@@ -54,7 +54,7 @@ See also: [`minkowski`](@ref)
 mae(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 1) / length(imgA)
 
 """
-	mse(imgA, imgB)
+    mse(imgA, imgB)
 
 mean squared error
 
@@ -63,7 +63,7 @@ See also: [`minkowski`](@ref)
 mse(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 2) / length(imgA)
 
 """
-	psnr(imgA, imgB, maxvalue)
+    psnr(imgA, imgB, maxvalue)
 
 peak signal to noise ratio
 
