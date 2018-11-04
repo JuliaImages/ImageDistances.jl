@@ -13,6 +13,10 @@ using ProgressMeter
 include("generic.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
+include("minkowski.jl")
+include("mae.jl")
+include("mse.jl")
+include("psnr.jl")
 
 export
     # generic types
@@ -25,6 +29,8 @@ export
     ModifiedHausdorff,
     CIEDE2000,
     Minkowski,
+    MeanAbsoluteError,
+    MeanSquaredError,
 
     # helper functions
     hausdorff,

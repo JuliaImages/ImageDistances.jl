@@ -53,4 +53,9 @@ evaluate(d::MyImgDist, imgA, imgB) = π
       @test ciede2000(A, B) ≥ 0
       @test ciede2000(A, B) == ciede2000(B, A)
     end
+
+    include("minkowski.jl")
+    include("psnr.jl")
+    include("mae.jl")
+    include("mse.jl")
 end

@@ -1,75 +1,53 @@
 """
     Minkowski(order::Real)
 
-Minkowski distance of order p
+Minkowski distance of order p (p≧0)
 
 ```math
 D(X,Y) = (\\sum_{i=1}^n \\left|X_i - Y_i\\right|^p)^{1/p}
 ```
 
+See also: [`evaluate`](@ref), [`minkowski`](@ref)
 """
-struct Minkowski <: ImageDistances.ImageMetric
+struct Minkowski <: ImagePreMetric # not ImageMetric if order < 1
     order::Real
+    Minkowski(order) = order < 0 ? ArgumentError("order $order should be positive") : new(order)
 end
 
 """
-    minkowski_p(d::Minkowski, imgA, imgB)
+    minkowski_p(imgA, imgB, metric::Minkowski)
+    minkowski_p(imgA, imgB, order::Real)
 
 minkowski distance to p-th power
 
-See also: [`minkowski`](@ref)
+See also: [`Minkowski`](@ref), [`minkowski`](@ref)
 """
-function minkowski_p(d::Minkowski, imgA::AbstractArray, imgB::AbstractArray)::Real
-    if d.order == 2
-        return reduce(+, abs2.(channelview(imgA)[:] .- channelview(imgB)[:]))
+function minkowski_p(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski)
+    T = promote_type(difftype(eltype(imgA)), difftype(eltype(imgB))) # N0fx -> Float
+    imgA = channelview(convert.(T, imgA))
+    imgB = channelview(convert.(T, imgB))
+    if metric.order == 2
+        return reduce(+, abs2.(imgA[:] .- imgB[:]))
     end
-    return reduce(+, abs.(channelview(imgA[:]) .- channelview(imgB[:])) .^ d.order)
+    return reduce(+, abs.(imgA[:] .- imgB[:]) .^ metric.order)
 end
-
-function evaluate(d::Minkowski, imgA::AbstractArray, imgB::AbstractArray)::Real
-    if d.order == 2
-        return sqrt(minkowski_p(d, imgA, imgB))
-    end
-    return minkowski_p(d, imgA, imgB) .^ (1/d.order)
-end
+minkowski_p(imgA::AbstractArray, imgB::AbstractArray, order::Real) = minkowski_p(imgA, imgB, Minkowski(order))
 
 """
     minkowski(imgA, imgB, metric::Minkowski)
-    minkowski(imgA, imgB, [order = 2])
+    minkowski(imgA, imgB, order::Real)
 
 minkowski distance of order p
 
-See also: [`Minkowski`](@ref)
+See also: [`Minkowski`](@ref), [`minkowski_p`](@ref)
 """
-minkowski(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski) = evaluate(metric, imgA, imgB)
-minkowski(imgA::AbstractArray, imgB::AbstractArray, order::Real = 2) = evaluate(Minkowski(order), imgA, imgB)
+function minkowski(imgA::AbstractArray, imgB::AbstractArray, metric::Minkowski)
+    if metric.order == 2
+        return sqrt(minkowski_p(imgA, imgB, metric))
+    else
+        return minkowski_p(imgA, imgB, metric) .^ (1/metric.order)
+    end
+end
+minkowski(imgA::AbstractArray, imgB::AbstractArray, order::Real) = minkowski(imgA, imgB, Minkowski(order))
 
-"""
-    mae(imgA, imgB)
-
-mean absolute error
-
-See also: [`minkowski`](@ref)
-"""
-mae(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 1) / length(imgA)
-
-"""
-    mse(imgA, imgB)
-
-mean squared error
-
-See also: [`minkowski`](@ref)
-""" 
-mse(imgA::AbstractArray, imgB::AbstractArray) = minkowski_p(imgA, imgB, 2) / length(imgA)
-
-"""
-    psnr(imgA, imgB, [maxvalue=1])
-
-peak signal to noise ratio
-
-```math
-    psnr = 10log_{10}\\big(\\frac{MAX_I^2}{MSE}\\big)
-```
-
-"""
-psnr(imgA::AbstractArray, imgB::AbstractArray, maxvalue = 1) = 10*log10(maxvalue^2 / mse(imgA, imgB))
+evaluate(d::Minkowski, imgA::AbstractArray, imgB::AbstractArray) = minkowski(imgA, imgB, d)
