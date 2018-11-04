@@ -1,6 +1,7 @@
 using Colors
 using Distances
 using ImageDistances
+using FixedPointNumbers
 using LinearAlgebra: I, issymmetric
 using Test
 
