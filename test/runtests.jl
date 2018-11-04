@@ -55,7 +55,6 @@ evaluate(d::MyImgDist, imgA, imgB) = π
     end
 
     include("minkowski.jl")
-    include("psnr.jl")
     include("mae.jl")
     include("mse.jl")
 end
