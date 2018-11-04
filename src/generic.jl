@@ -74,3 +74,16 @@ function pairwise(d::ImageSemiMetric, imgs::AbstractArray{IMG}) where {IMG<:Abst
 
     D
 end
+
+difftype(::Type{T}) where {T<:Integer} = Int
+difftype(::Type{T}) where {T<:Real} = Float32
+difftype(::Type{Float64}) = Float64
+difftype(::Type{CV}) where {CV<:Colorant} = difftype(CV, eltype(CV))
+difftype(::Type{CV}, ::Type{T}) where {CV<:RGBA,T<:Real} = RGBA{Float32}
+difftype(::Type{CV}, ::Type{Float64}) where {CV<:RGBA} = RGBA{Float64}
+difftype(::Type{CV}, ::Type{T}) where {CV<:BGRA,T<:Real} = BGRA{Float32}
+difftype(::Type{CV}, ::Type{Float64}) where {CV<:BGRA} = BGRA{Float64}
+difftype(::Type{CV}, ::Type{T}) where {CV<:AbstractGray,T<:Real} = Gray{Float32}
+difftype(::Type{CV}, ::Type{Float64}) where {CV<:AbstractGray} = Gray{Float64}
+difftype(::Type{CV}, ::Type{T}) where {CV<:AbstractRGB,T<:Real} = RGB{Float32}
+difftype(::Type{CV}, ::Type{Float64}) where {CV<:AbstractRGB} = RGB{Float64}
