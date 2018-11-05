@@ -2,10 +2,7 @@ __precompile__()
 
 module ImageDistances
 
-import Base: size, ==
-
 using Distances
-import Distances: evaluate, colwise, pairwise
 
 using Colors
 using ProgressMeter
@@ -19,6 +16,11 @@ export
     ImagePreMetric,
     ImageSemiMetric,
     ImageMetric,
+
+    # generic functions
+    evaluate,
+    colwise,
+    pairwise,
 
     # concrete types
     Hausdorff,

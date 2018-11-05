@@ -1,14 +1,12 @@
 using Colors
-using Distances
 using ImageDistances
 using LinearAlgebra: I, issymmetric
 using Test
 
 # define a dummy distance to test generic
 # colwise and pairwise (coverage purposes)
-import ImageDistances: evaluate
 struct MyImgDist <: ImageMetric end
-evaluate(d::MyImgDist, imgA, imgB) = π
+ImageDistances.evaluate(d::MyImgDist, imgA, imgB) = π
 
 @testset "ImageDistances.jl" begin
     @testset "Generic" begin
