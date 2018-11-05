@@ -46,7 +46,7 @@ function evaluate_pset(d::Hausdorff, psetA, psetB)
     psetA == psetB && return 0.
     (isempty(psetA) || isempty(psetA)) && return Inf
 
-    D = pairwise(Euclidean(), psetA, psetB)
+    D = Distances.pairwise(Euclidean(), psetA, psetB)
 
     dAB = reduce(d.inner_op, minimum(D, dims=2))
     dBA = reduce(d.inner_op, minimum(D, dims=1))
