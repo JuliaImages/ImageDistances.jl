@@ -11,13 +11,12 @@ Distances between images following the [Distances.jl](https://github.com/JuliaSt
 Get the latest stable release with Julia's package manager:
 
 ```julia
-Pkg.add("ImageDistances")
+] add ImageDistances
 ```
 
 ## Usage
 
 ```julia
-using Distances
 using ImageDistances
 
 d = ModifiedHausdorff()
