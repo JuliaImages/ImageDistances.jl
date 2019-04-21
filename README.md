@@ -1,7 +1,6 @@
 # ImageDistances.jl
 
 [![Build Status](https://travis-ci.org/JuliaImages/ImageDistances.jl.svg?branch=master)](https://travis-ci.org/JuliaImages/ImageDistances.jl)
-[![ImageDistances](http://pkg.julialang.org/badges/ImageDistances_0.7.svg)](http://pkg.julialang.org/?pkg=ImageDistances)
 [![codecov.io](http://codecov.io/github/JuliaImages/ImageDistances.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaImages/ImageDistances.jl?branch=master)
 
 Distances between images following the [Distances.jl](https://github.com/JuliaStats/Distances.jl) API.
