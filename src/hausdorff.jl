@@ -1,3 +1,5 @@
+# assume base distance is Euclidea`````````````````````````
+
 """
     ReductionOperation
 
