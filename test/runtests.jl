@@ -27,7 +27,7 @@ ImageDistances.evaluate(d::MyImgDist, imgA, imgB) = π
         B[1,2] = 1; C[1,3] = 1
         @test hausdorff(A,A) == 0
         @test hausdorff(A,B) == hausdorff(B,A)
-        @test hausdorff(A,B) == hausdorff(A,C) # Hausdorff is less sensitive than Modified Hausdorff
+        @test hausdorff(A,B) < hausdorff(A,C)
         @test modified_hausdorff(A,A) == 0
         @test modified_hausdorff(A,B) == modified_hausdorff(B,A)
         @test modified_hausdorff(A,B) < modified_hausdorff(A,C)

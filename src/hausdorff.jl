@@ -5,13 +5,11 @@ A reduction operation on a set of values (e.g. maximum).
 """
 abstract type ReductionOperation end
 
-struct MinReduction  <: ReductionOperation end
-struct MeanReduction <: ReductionOperation end
 struct MaxReduction  <: ReductionOperation end
+struct MeanReduction <: ReductionOperation end
 
-reduce(op::MinReduction, x)  = minimum(x)
-reduce(op::MeanReduction, x) = sum(x) / length(x)
 reduce(op::MaxReduction, x)  = maximum(x)
+reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
     Hausdorff(inner_op, outer_op)
@@ -30,7 +28,7 @@ struct Hausdorff{I<:ReductionOperation,O<:ReductionOperation} <: ImageMetric
 end
 
 # original definition as it first appeared in the literature
-Hausdorff() = Hausdorff(MinReduction(), MaxReduction())
+Hausdorff() = Hausdorff(MaxReduction(), MaxReduction())
 
 # modified (fast) Hausdorff distance proposed by Dubuisson, M-P et al. 1994
 ModifiedHausdorff() = Hausdorff(MeanReduction(), MaxReduction())
@@ -46,7 +44,7 @@ function evaluate_pset(d::Hausdorff, psetA, psetB)
     psetA == psetB && return 0.
     (isempty(psetA) || isempty(psetA)) && return Inf
 
-    D = Distances.pairwise(Euclidean(), psetA, psetB)
+    D = Distances.pairwise(Euclidean(), psetA, psetB, dims=2)
 
     dAB = reduce(d.inner_op, minimum(D, dims=2))
     dBA = reduce(d.inner_op, minimum(D, dims=1))
