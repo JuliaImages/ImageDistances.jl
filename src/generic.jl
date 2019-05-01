@@ -7,7 +7,7 @@ function colwise!(r::AbstractVector, dist::PreMetric,
     n == length(b) || throw(DimensionMismatch("The number of columns in a and b must match."))
     length(r) == n || throw(DimensionMismatch("Incorrect size of r."))
     @inbounds for j = 1:n
-        r[j] = evaluate(dist, a[j], b[j])
+        r[j] = evaluate(dist, a[j], b[j]) # TODO: use view
     end
     r
 end
@@ -18,64 +18,66 @@ function colwise!(r::AbstractVector, dist::PreMetric,
     (m, n) = get_colwise_dims(r, a, b)
     m == 1 || throw(DimensionMismatch("The number of columns should be 1."))
     @inbounds for j = 1:n
-        r[j] = evaluate(dist, a[1,j], b[1,j])
+        r[j] = evaluate(dist, a[1,j], b[1,j]) # TODO: use view
     end
     r
 end
 
-function colwise(dist::PreMetric, a::AbstractVector{<:AbstractArray}, b::AbstractVector{<:AbstractArray})
+function colwise(dist::PreMetric,
+                 a::AbstractVector{<:AbstractArray},
+                 b::AbstractVector{<:AbstractArray})
     n = length(a)
     r = Vector{result_type(dist, a, b)}(undef, n)
     colwise!(r, dist, a, b)
 end
 
-function colwise(dist::PreMetric, a::AbstractMatrix{<:AbstractArray}, b::AbstractMatrix{<:AbstractArray})
+function colwise(dist::PreMetric,
+                 a::AbstractMatrix{<:AbstractArray},
+                 b::AbstractMatrix{<:AbstractArray})
     n = get_common_ncols(a, b)
     r = Vector{result_type(dist, a, b)}(undef, n)
     colwise!(r, dist, a, b)
 end
 
-# function pairwise(d::PreMetric,
-#                   imgsA::AbstractVector{IMG},
-#                   imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
-#     m, n = length(imgsA), length(imgsB)
-#     D = zeros(m, n)
-#     for j=1:n
-#       imgB = imgsB[j]
-#       for i=1:j-1
-#         imgA = imgsA[i]
-#         @inbounds D[i,j] = evaluate(d, imgA, imgB)
-#       end
-#       for i=j+1:m
-#         imgA = imgsA[i]
-#         @inbounds D[i,j] = evaluate(d, imgA, imgB)
-#       end
-#     end
+# Generic pairwise evaluation
+# TODO: Matrix support
+# TODO: add `pairwise!` and `_pairwise!` to accelerate using codes from `Distances`
 
-#     D
-# end
+function pairwise(d::PreMetric,
+                  imgsA::AbstractVector{<:AbstractArray},
+                  imgsB::AbstractVector{<:AbstractArray} = imgsA)
+    m, n = length(imgsA), length(imgsB)
+    D = zeros(m, n)
+    for j=1:n
+        imgB = imgsB[j] # TODO: use view
+        for i=1:m
+            imgA = imgsA[i] # TODO: use view
+            @inbounds D[i,j] = evaluate(d, imgA, imgB)
+        end
+    end
 
-# pairwise(d::PreMetric, imgs::AbstractArray{IMG}) where {IMG<:AbstractArray} =
-#     pairwise(d, imgs, imgs)
+    D
+end
 
-# # exploit symmetry of semimetric
-# function pairwise(d::SemiMetric, imgs::AbstractArray{IMG}) where {IMG<:AbstractArray}
-#     n = length(imgs)
-#     D = zeros(n, n)
-#     for j=1:n
-#       imgB = imgs[j]
-#       for i=j+1:n
-#         imgA = imgs[i]
-#         @inbounds D[i,j] = evaluate(d, imgA, imgB)
-#       end
-#       # nothing to be done to the diagonal (always zero)
-#       for i=1:j-1
-#         @inbounds D[i,j] = D[j,i] # leverage the symmetry
-#       end
-#     end
+# exploit symmetry of semimetric
+function pairwise(d::SemiMetric, imgs::AbstractVector{<:AbstractArray})
+    n = length(imgs)
+    D = zeros(n, n)
+    for j=1:n
+        imgB = imgs[j] # TODO: use view
+        for i=j+1:n
+            imgA = imgs[i] # TODO: use view
+            @inbounds D[i,j] = evaluate(d, imgA, imgB)
+        end
+        # nothing to be done to the diagonal (always zero)
+        for i=1:j-1
+            @inbounds D[i,j] = D[j,i] # leverage the symmetry
+        end
+    end
 
-#     D
-# end
+    D
+end
+
 
 evaluate(dist::PreMetric, a::AbstractArray{<:Colorant}, b::AbstractArray{<:Colorant}) =
     evaluate(dist, rawview(channelview(a)), rawview(channelview(b)))

@@ -3,12 +3,12 @@
 
 test if `colwise` works as expected in the following two inputs:
 
-* (n,)Vector - (n,)Vector
-* (1,n)Matrix - (1,n)Matrix
+* `(n,)Vector` - `(n,)Vector`
+* `(1,n)Matrix` - `(1,n)Matrix`
 
 and throw error for ambigious inputs:
 
-* (m,n)Matrix - (m,b)Matrix  ,where `m!=1`
+* `(m,n)Matrix` - `(m,b)Matrix`  where `m!=1`
 
 """
 function test_colwise(dist, n, sz, T)
@@ -34,6 +34,33 @@ function test_colwise(dist, n, sz, T)
 end
 
 """
+    test_pairwise(dist, nA, nB, sz, T)
+
+test if `pairwise` works as expected in the following two inputs:
+
+* `(n,)Vector`-`(n,)Vector`
+"""
+function test_pairwise(dist, nA, nB, sz, T)
+    @testset "pairwise" begin
+        vec_imgsA = [rand(T, sz) for _ in 1:nA]
+        vec_imgsB = [rand(T, sz) for _ in 1:nB]
+
+        RT = result_type(dist, vec_imgsA, vec_imgsB)
+        rAB = zeros(RT, nA, nB)
+        rAA = zeros(RT, nA, nA)
+        for j = 1:nB, i = 1:nA
+            rAB[i, j] = evaluate(dist, vec_imgsA[i], vec_imgsB[j])
+        end
+        for j = 1:nA, i = 1:nA
+            rAA[i, j] = evaluate(dist, vec_imgsA[i], vec_imgsA[j])
+        end
+        @test pairwise(dist, vec_imgsA, vec_imgsB) ≈ rAB
+        @test pairwise(dist, vec_imgsA, vec_imgsA) ≈ rAA
+        @test pairwise(dist, vec_imgsA) ≈ rAA
+    end
+end
+
+"""
     test_numeric(dist, a, b, T)
 
 simply test that `dist` works for 2d image as expected, more tests go to `Distances.jl`
@@ -47,6 +74,7 @@ function test_numeric(dist, a, b, T)
     end
 end
 
+m = 3
 n = 5
 sz_img = (3, 3)
 w = rand(Float64, sz_img)
@@ -59,7 +87,7 @@ dist_list = [SqEuclidean(),
             MeanAbsDeviation(),
             MeanSqDeviation(),
             RMSDeviation(),
-            NormRMSDeviation(),
+            # NormRMSDeviation(), # broken https://github.com/JuliaStats/Distances.jl/pull/131
             TotalVariation(),
             ]
 
@@ -69,6 +97,8 @@ for dist in dist_list
         for T in type_list
             @testset "$T" begin
                 test_colwise(dist, n, sz_img, T)
+                test_pairwise(dist, m, n, sz_img, T)
+
                 a = [0 0 0; 1 1 1; 0 0 0] .|> T
                 b = [1 1 1; 0 0 0; 1 1 1] .|> T
                 test_numeric(dist, a, b, T)

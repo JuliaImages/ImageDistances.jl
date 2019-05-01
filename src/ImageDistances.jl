@@ -1,7 +1,6 @@
 module ImageDistances
 
-using Reexport
-@reexport using Distances
+using Distances
 using Distances:
     eval_op,
     eval_end,
@@ -13,8 +12,7 @@ import Distances:
     evaluate,
     colwise,
     colwise!,
-    pairwise,
-    pairwise!
+    pairwise
 
 using FixedPointNumbers
 using FixedPointNumbers: floattype
@@ -28,6 +26,45 @@ include("metrics.jl")
 include("generic.jl")
 # include("hausdorff.jl")
 # include("ciede2000.jl")
+
+# delibrately not use Reexport
+# untested metrics from Distances are not exported
+export
+    # generic types
+    PreMetric,
+    SemiMetric,
+    Metric,
+
+    # generic functions
+    result_type,
+    evaluate,
+    colwise,
+    colwise!,
+    pairwise,
+
+    # concrete types
+    SqEuclidean,
+    Euclidean,
+    Cityblock,
+    Minkowski,
+    Hamming,
+    TotalVariation,
+    MeanAbsDeviation,
+    MeanSqDeviation,
+    RMSDeviation,
+    NormRMSDeviation,
+
+    # helper functions
+    sqeuclidean,
+    euclidean,
+    cityblock,
+    minkowski,
+    hamming,
+    totalvariation,
+    meanad, # MeanAbsDeviation
+    msd, # MeanSqDeviation
+    rmsd, # RMSDeviation
+    nrmsd # NormRMSDeviation
 
 # export
 #     # concrete types
