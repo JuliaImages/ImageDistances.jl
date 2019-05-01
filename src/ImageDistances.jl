@@ -2,21 +2,29 @@ module ImageDistances
 
 using Reexport
 @reexport using Distances
-using Distances: get_common_ncols, get_colwise_dims, get_pairwise_dims, result_type
+using Distances:
+    eval_op,
+    eval_end,
+    get_common_ncols,
+    get_colwise_dims,
+    get_pairwise_dims
 import Distances:
+    result_type,
     evaluate,
     colwise,
     colwise!,
     pairwise,
     pairwise!
 
-using Colors
-using ImageCore
-using ProgressMeter
+using FixedPointNumbers
+using FixedPointNumbers: floattype
+using ImageCore, ColorVectorSpace
 
-const NumberLike{T <: Number} = Union{T,Gray{T}}
-const GrayImageLike{T <: Number} = AbstractArray{<:NumberLike{T}}
+const BoolLike{T<:Bool} = Union{T, Colorant{T}}
+const FixedPointLike{T<:FixedPoint} = Union{T, Colorant{T}}
 
+
+include("metrics.jl")
 include("generic.jl")
 # include("hausdorff.jl")
 # include("ciede2000.jl")
@@ -33,7 +41,7 @@ include("generic.jl")
 #     ciede2000
 
 """
-`ImageDistances` is an superset of `Distances` that focus on providing image-related functions
+`ImageDistances` is an image-related distance package built based on `Distances`.
 """
 ImageDistances
 end # module

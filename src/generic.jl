@@ -1,8 +1,8 @@
 # TODO: broadcasting
 # TODO: RGB distance
 function colwise!(r::AbstractVector, dist::PreMetric,
-                  a::AbstractVector{<:GrayImageLike},
-                  b::AbstractVector{<:GrayImageLike})
+                  a::AbstractVector{<:AbstractArray},
+                  b::AbstractVector{<:AbstractArray})
     n = length(a)
     n == length(b) || throw(DimensionMismatch("The number of columns in a and b must match."))
     length(r) == n || throw(DimensionMismatch("Incorrect size of r."))
@@ -13,8 +13,8 @@ function colwise!(r::AbstractVector, dist::PreMetric,
 end
 
 function colwise!(r::AbstractVector, dist::PreMetric,
-                  a::AbstractMatrix{<:GrayImageLike},
-                  b::AbstractMatrix{<:GrayImageLike})
+                  a::AbstractMatrix{<:AbstractArray},
+                  b::AbstractMatrix{<:AbstractArray})
     (m, n) = get_colwise_dims(r, a, b)
     m == 1 || throw(DimensionMismatch("The number of columns should be 1."))
     @inbounds for j = 1:n
@@ -23,13 +23,13 @@ function colwise!(r::AbstractVector, dist::PreMetric,
     r
 end
 
-function colwise(dist::PreMetric, a::AbstractVector{<:GrayImageLike}, b::AbstractVector{<:GrayImageLike})
+function colwise(dist::PreMetric, a::AbstractVector{<:AbstractArray}, b::AbstractVector{<:AbstractArray})
     n = length(a)
     r = Vector{result_type(dist, a, b)}(undef, n)
     colwise!(r, dist, a, b)
 end
 
-function colwise(dist::PreMetric, a::AbstractMatrix{<:GrayImageLike}, b::AbstractMatrix{<:GrayImageLike})
+function colwise(dist::PreMetric, a::AbstractMatrix{<:AbstractArray}, b::AbstractMatrix{<:AbstractArray})
     n = get_common_ncols(a, b)
     r = Vector{result_type(dist, a, b)}(undef, n)
     colwise!(r, dist, a, b)
@@ -77,4 +77,5 @@ end
 #     D
 # end
 
-evaluate(dist::PreMetric, a::GrayImageLike, b::GrayImageLike) = evaluate(dist, rawview(channelview(a)), rawview(channelview(b)))
+evaluate(dist::PreMetric, a::AbstractArray{<:Colorant}, b::AbstractArray{<:Colorant}) =
+    evaluate(dist, rawview(channelview(a)), rawview(channelview(b)))

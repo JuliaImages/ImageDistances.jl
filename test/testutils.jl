@@ -1,6 +1,6 @@
-const SizeLike = Union{Integer,AbstractUnitRange}
+# const SizeLike = Union{Integer, AbstractUnitRange}
 
-function generate_test_types(number_types::AbstractArray, color_types::AbstractArray)
+function generate_test_types(number_types::AbstractArray{<:DataType}, color_types::AbstractArray{<:UnionAll})
     test_types = map(Iterators.product(number_types, color_types)) do T
         try
             T[2]{T[1]}
@@ -9,4 +9,5 @@ function generate_test_types(number_types::AbstractArray, color_types::AbstractA
         end
     end
     test_types = filter(x->x != false, test_types)
+    test_types = [number_types..., test_types...]
 end

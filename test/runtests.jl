@@ -1,6 +1,7 @@
 using Test
 using ImageCore, Colors
 using FixedPointNumbers
+using ReferenceTests
 using ImageDistances
 
 # each function should cover any combination of number_types and color_types
