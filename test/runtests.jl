@@ -18,7 +18,7 @@ include("generic.jl")
 #         B[1,2] = 1; C[1,3] = 1
 #         @test hausdorff(A,A) == 0
 #         @test hausdorff(A,B) == hausdorff(B,A)
-#         @test hausdorff(A,B) == hausdorff(A,C) # Hausdorff is less sensitive than Modified Hausdorff
+#         @test hausdorff(A,B) < hausdorff(A,C)
 #         @test modified_hausdorff(A,A) == 0
 #         @test modified_hausdorff(A,B) == modified_hausdorff(B,A)
 #         @test modified_hausdorff(A,B) < modified_hausdorff(A,C)
@@ -41,4 +41,5 @@ include("generic.jl")
 
 #       @test ciede2000(A, B) ≥ 0
 #       @test ciede2000(A, B) == ciede2000(B, A)
-    # end
+#     end
+# end
