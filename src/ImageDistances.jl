@@ -50,9 +50,6 @@ export
     Minkowski,
     Hamming,
     TotalVariation,
-    MeanAbsDeviation,
-    MeanSqDeviation,
-    RMSDeviation,
 
     # helper functions from Distances.jl
     sqeuclidean,
@@ -60,10 +57,7 @@ export
     cityblock,
     minkowski,
     hamming,
-    totalvariation,
-    meanad, # MeanAbsDeviation
-    msd, # MeanSqDeviation
-    rmsd # RMSDeviation
+    totalvariation
 
 
 # export
