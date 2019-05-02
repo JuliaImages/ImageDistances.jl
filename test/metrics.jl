@@ -1,21 +1,6 @@
-"""
-    test_numeric(dist, a, b, T)
-
-simply test that `dist` works for 2d image as expected, more tests go to `Distances.jl`
-"""
-function test_numeric(dist, a, b, T)
-    @testset "numeric" begin
-        @testset "$T" begin
-            # @test_reference "references/$(typeof(dist))_$(eltype(a))_$(eltype(b)).txt" evaluate(dist, a, b)
-            @test_reference "references/$(typeof(dist)).txt" Float64(evaluate(dist, a, b))
-        end
-    end
-end
-
-m = 3
-n = 5
+# Test Metrics from Distances.jl
+m, n = 3, 5
 sz_img = (3, 3)
-w = rand(Float64, sz_img)
 type_list = generate_test_types(number_types, [Gray,]) # RGB is not supported yet
 dist_list = [SqEuclidean(),
             Euclidean(),
