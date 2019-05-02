@@ -12,6 +12,7 @@ type_list = generate_test_types(number_types, color_types)
 
 
 include("generic.jl")
+include("test_dists.jl")
 
 #     @testset "Hausdorff" begin
 #         A = Matrix(1.0I,3,3); B = copy(A); C = copy(A)

@@ -21,11 +21,11 @@ using ImageCore, ColorVectorSpace
 const BoolLike{T<:Bool} = Union{T, Colorant{T}}
 const FixedPointLike{T<:FixedPoint} = Union{T, Colorant{T}}
 
-
 include("metrics.jl")
 include("generic.jl")
 # include("hausdorff.jl")
 # include("ciede2000.jl")
+
 
 # delibrately not use Reexport
 # untested metrics from Distances are not exported
@@ -42,7 +42,7 @@ export
     colwise!,
     pairwise,
 
-    # concrete types
+    # concrete types from Distances.jl
     SqEuclidean,
     Euclidean,
     Cityblock,
@@ -52,9 +52,8 @@ export
     MeanAbsDeviation,
     MeanSqDeviation,
     RMSDeviation,
-    NormRMSDeviation,
 
-    # helper functions
+    # helper functions from Distances.jl
     sqeuclidean,
     euclidean,
     cityblock,
@@ -63,8 +62,8 @@ export
     totalvariation,
     meanad, # MeanAbsDeviation
     msd, # MeanSqDeviation
-    rmsd, # RMSDeviation
-    nrmsd # NormRMSDeviation
+    rmsd # RMSDeviation
+
 
 # export
 #     # concrete types
