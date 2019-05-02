@@ -22,12 +22,18 @@ const PromoteType = Union{AbstractFloat, FixedPoint, Bool} # result_type need pr
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
 const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
 
+# FixedPoint and Bool are converted to Float before evaluate
+intermediatetype(::Type{T}) where T<:AbstractFloat = T
+intermediatetype(::Type{T}) where T<:FixedPoint = FixedPointNumbers.floattype(T)
+intermediatetype(::Type{T}) where T<:Bool = Float64
+
 include("metrics.jl")
 include("generic.jl")
-# include("hausdorff.jl")
+include("hausdorff.jl")
 # include("ciede2000.jl")
 
 
+# reexport symbols from Distances.jl
 # delibrately not use Reexport
 # untested metrics from Distances are not exported
 export
@@ -43,7 +49,7 @@ export
     colwise!,
     pairwise,
 
-    # concrete types from Distances.jl
+    # concrete types
     SqEuclidean,
     Euclidean,
     Cityblock,
@@ -51,7 +57,7 @@ export
     Hamming,
     TotalVariation,
 
-    # helper functions from Distances.jl
+    # helper functions
     sqeuclidean,
     euclidean,
     cityblock,
@@ -59,17 +65,16 @@ export
     hamming,
     totalvariation
 
+export
+    # concrete types
+    Hausdorff,
+    ModifiedHausdorff,
+    CIEDE2000,
 
-# export
-#     # concrete types
-#     Hausdorff,
-#     ModifiedHausdorff,
-#     CIEDE2000,
-
-#     # helper functions
-#     hausdorff,
-#     modified_hausdorff,
-#     ciede2000
+    # helper functions
+    hausdorff,
+    modified_hausdorff,
+    ciede2000
 
 """
 `ImageDistances` is an image-related distance package built based on `Distances`.

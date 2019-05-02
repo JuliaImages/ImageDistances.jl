@@ -1,5 +1,3 @@
-# assume base distance is Euclidea`````````````````````````
-
 """
     ReductionOperation
 
@@ -10,11 +8,11 @@ abstract type ReductionOperation end
 struct MaxReduction  <: ReductionOperation end
 struct MeanReduction <: ReductionOperation end
 
-reduce(op::MaxReduction, x)  = maximum(x)
-reduce(op::MeanReduction, x) = sum(x) / length(x)
+_reduce(op::MaxReduction, x)  = maximum(x)
+_reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
-    Hausdorff(inner_op, outer_op)
+    GenericHausdorff(inner_op, outer_op)
 
 The generalized Hausdorff distance with inner reduction `inner_op`
 and outer reduction `outer_op`.
@@ -24,89 +22,132 @@ and outer reduction `outer_op`.
 Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
 Object-Matching.
 """
-struct Hausdorff{I<:ReductionOperation,O<:ReductionOperation} <: ImageMetric
+struct GenericHausdorff{I<:ReductionOperation, O<:ReductionOperation} <: Metric
     inner_op::I
     outer_op::O
 end
 
-# original definition as it first appeared in the literature
+@doc raw"""
+    Hausdorff <: GenericHausdorff
+    hausdorff(x::BoolImage, y::BoolImage)
+
+Hausdorff distance between two point sets ``\mathcal{A}`` and ``\mathcal{B}``, which
+consist of point positions of 1s of `x` and `y`, respectively. The distance is computed
+using the following formula:
+
+```math
+    \text{hausdorff}(x,y) = max(d(\mathcal{A}, \mathcal{B}), d(\mathcal{B}, \mathcal{A}))
+```
+where
+```math
+    d(\mathcal{A}, \mathcal{B}) = max_{a\in\mathcal{A}}d(a, \mathcal{B}) \\
+    d(a, \mathcal{B}) = max_{b\in\mathcal{B}}d(a, b)
+```
+and the point distance is calcuated using [`Euclidean`](@ref) distance.
+
+## References
+
+Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
+Object-Matching.
+
+See also: [`modified_hausdorff`](@ref)
+"""
+const Hausdorff = GenericHausdorff{MaxReduction, MaxReduction}
 Hausdorff() = Hausdorff(MaxReduction(), MaxReduction())
 
-# modified (fast) Hausdorff distance proposed by Dubuisson, M-P et al. 1994
-ModifiedHausdorff() = Hausdorff(MeanReduction(), MaxReduction())
+@doc raw"""
+    ModifiedHausdorff <: GenericHausdorff
+    modified_hausdorff(x::BoolImage, y::BoolImage)
+
+Modified Hausdorff distance between two point sets ``\mathcal{A}`` and ``\mathcal{B}``,
+which consist of point positions of 1s of `x` and `y`, respectively. The distance is
+computed using the following formula:
+
+```math
+    \text{modified_hausdorff}(x,y) = max(d(\mathcal{A}, \mathcal{B}), d(\mathcal{B}, \mathcal{A}))
+```
+where
+```math
+    d(\mathcal{A}, \mathcal{B}) = \frac{1}{N_a}\sum_{a\in\mathcal{A}}d(a, \mathcal{B}) \\
+    d(a, \mathcal{B}) = max_{b\in\mathcal{B}}d(a, b)
+```
+and the point distance is calcuated using [`Euclidean`](@ref) distance.
+
+## References
+
+Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
+Object-Matching.
+
+See also: [`hausdorff`](@ref)
+"""
+const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
+ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to a point set format
-function img2pset(img)
-    inds = findall(!iszero, img)
+function img2pset(img::GenericImage{Bool})
+    inds = findall(x->x==true, img)
     [inds[j][i] for i=1:ndims(img), j=1:length(inds)]
 end
 
-function evaluate_pset(d::Hausdorff, psetA, psetB)
+function evaluate_pset(d::GenericHausdorff, psetA, psetB)
     # trivial cases
     psetA == psetB && return 0.
     (isempty(psetA) || isempty(psetA)) && return Inf
 
-    D = Distances.pairwise(Euclidean(), psetA, psetB, dims=2)
+    D = pairwise(Euclidean(), psetA, psetB, dims=2)
 
-    dAB = reduce(d.inner_op, minimum(D, dims=2))
-    dBA = reduce(d.inner_op, minimum(D, dims=1))
+    dAB = _reduce(d.inner_op, minimum(D, dims=2))
+    dBA = _reduce(d.inner_op, minimum(D, dims=1))
 
-    reduce(d.outer_op, (dAB, dBA))
+    _reduce(d.outer_op, (dAB, dBA))
 end
 
-evaluate(d::Hausdorff, imgA::AbstractArray, imgB::AbstractArray) =
+evaluate(d::GenericHausdorff, imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) =
     evaluate_pset(d, img2pset(imgA), img2pset(imgB))
 
 # helper functions
-hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(Hausdorff(), imgA, imgB)
-modified_hausdorff(imgA::AbstractArray, imgB::AbstractArray) = evaluate(ModifiedHausdorff(), imgA, imgB)
+@doc (@doc Hausdorff)
+hausdorff(imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) = evaluate(Hausdorff(), imgA, imgB)
 
-function pairwise(d::Hausdorff,
-                  imgsA::AbstractVector{IMG},
-                  imgsB::AbstractVector{IMG}) where {IMG<:AbstractArray}
+@doc (@doc ModifiedHausdorff)
+modified_hausdorff(imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) = evaluate(ModifiedHausdorff(), imgA, imgB)
 
+# precalculate psets to accelerate computing
+function pairwise(d::GenericHausdorff,
+                  imgsA::AbstractVector{GenericImage{Bool}},
+                  imgsB::AbstractVector{GenericImage{Bool}})
     psetsA = [img2pset(imgA) for imgA in imgsA]
     psetsB = [img2pset(imgB) for imgB in imgsB]
 
     m, n = length(imgsA), length(imgsB)
-
-    nelm = m*n - min(m, n)
-    p = Progress(nelm, 1, "Evaluating Hausdorff...")
-
     D = zeros(m, n)
+
     for j=1:n
       psetB = psetsB[j]
-      for i=1:j-1
+      for i=1:min(j-1, m)
         psetA = psetsA[i]
         D[i,j] = evaluate_pset(d, psetA, psetB)
-        next!(p)
       end
-      for i=j+1:m
+      i==m && continue
+      for i=min(j+1,m):m
         psetA = psetsA[i]
         D[i,j] = evaluate_pset(d, psetA, psetB)
-        next!(p)
       end
     end
 
     D
 end
 
-function pairwise(d::Hausdorff, imgs::AbstractVector{IMG}) where {IMG<:AbstractArray}
-
+function pairwise(d::GenericHausdorff, imgs::AbstractVector{GenericImage{Bool}})
     psets = [img2pset(img) for img in imgs]
 
     n = length(imgs)
-
-    nelm = (n*(n-1)) ÷ 2
-    p = Progress(nelm, 1, "Evaluating Hausdorff...")
-
     D = zeros(n, n)
     for j=1:n
       psetB = psets[j]
       for i=j+1:n
         psetA = psets[i]
         D[i,j] = evaluate_pset(d, psetA, psetB)
-        next!(p)
       end
       # nothing to be done to the diagonal (always zero)
       for i=1:j-1
