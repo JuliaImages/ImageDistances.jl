@@ -22,9 +22,9 @@ dist_list = [SqEuclidean(),
             Cityblock(),
             Minkowski(2.5),
             Hamming(),
-            MeanAbsDeviation(),
-            MeanSqDeviation(),
-            RMSDeviation(),
+            # MeanAbsDeviation(),
+            # MeanSqDeviation(),
+            # RMSDeviation(),
             TotalVariation(),
             ]
 

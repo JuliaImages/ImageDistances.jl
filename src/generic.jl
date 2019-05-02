@@ -78,6 +78,5 @@ function pairwise(d::SemiMetric, imgs::AbstractVector{<:AbstractArray})
     D
 end
 
-
 evaluate(dist::PreMetric, a::AbstractArray{<:Colorant}, b::AbstractArray{<:Colorant}) =
     evaluate(dist, rawview(channelview(a)), rawview(channelview(b)))

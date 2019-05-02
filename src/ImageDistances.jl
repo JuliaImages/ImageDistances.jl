@@ -18,8 +18,9 @@ using FixedPointNumbers
 using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
 
-const BoolLike{T<:Bool} = Union{T, Colorant{T}}
-const FixedPointLike{T<:FixedPoint} = Union{T, Colorant{T}}
+const PromoteType = Union{AbstractFloat, FixedPoint, Bool} # result_type need promotion
+const PixelLike{T<:Number} = Union{T, Colorant{T}}
+const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
 
 include("metrics.jl")
 include("generic.jl")
