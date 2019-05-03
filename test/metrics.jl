@@ -1,7 +1,7 @@
 # Test Metrics from Distances.jl
 m, n = 3, 5
 sz_img = (3, 3)
-type_list = generate_test_types(number_types, [Gray,]) # RGB is not supported yet
+type_list = generate_test_types([Bool, Float32, N0f8], [Gray]) # RGB is not supported yet
 dist_list = [SqEuclidean(),
             Euclidean(),
             Cityblock(),

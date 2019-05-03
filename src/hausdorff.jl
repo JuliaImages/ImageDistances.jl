@@ -19,8 +19,9 @@ and outer reduction `outer_op`.
 
 ## References
 
-Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
-Object-Matching.
+Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Matching*.
+
+See also: [`Hausdorff`](@ref), [`ModifiedHausdorff`](@ref)
 """
 struct GenericHausdorff{I<:ReductionOperation, O<:ReductionOperation} <: Metric
     inner_op::I
@@ -47,8 +48,7 @@ and the point distance is calcuated using [`Euclidean`](@ref) distance.
 
 ## References
 
-Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
-Object-Matching.
+Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Matching*.
 
 See also: [`modified_hausdorff`](@ref)
 """
@@ -75,8 +75,7 @@ and the point distance is calcuated using [`Euclidean`](@ref) distance.
 
 ## References
 
-Dubuisson, M-P; Jain, A. K., 1994. A Modified Hausdorff Distance for
-Object-Matching.
+Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Matching*.
 
 See also: [`hausdorff`](@ref)
 """
