@@ -30,7 +30,7 @@ intermediatetype(::Type{T}) where T<:Bool = Float64
 include("metrics.jl")
 include("generic.jl")
 include("hausdorff.jl")
-# include("ciede2000.jl")
+include("ciede2000.jl")
 
 
 # reexport symbols from Distances.jl
@@ -67,6 +67,7 @@ export
 
 export
     # concrete types
+    GenericHausdorff,
     Hausdorff,
     ModifiedHausdorff,
     CIEDE2000,
