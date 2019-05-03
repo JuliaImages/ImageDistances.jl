@@ -83,7 +83,7 @@ const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
 ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to a point set format
-function img2pset(img::GenericImage{Bool})
+function img2pset(img::Gray2dImage{Bool})
     inds = findall(x->x==true, img)
     [inds[j][i] for i=1:ndims(img), j=1:length(inds)]
 end
@@ -101,20 +101,20 @@ function evaluate_pset(d::GenericHausdorff, psetA, psetB)
     _reduce(d.outer_op, (dAB, dBA))
 end
 
-evaluate(d::GenericHausdorff, imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) =
+evaluate(d::GenericHausdorff, imgA::Gray2dImage{Bool}, imgB::Gray2dImage{Bool}) =
     evaluate_pset(d, img2pset(imgA), img2pset(imgB))
 
 # helper functions
 @doc (@doc Hausdorff)
-hausdorff(imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) = evaluate(Hausdorff(), imgA, imgB)
+hausdorff(imgA::Gray2dImage{Bool}, imgB::Gray2dImage{Bool}) = evaluate(Hausdorff(), imgA, imgB)
 
 @doc (@doc ModifiedHausdorff)
-modified_hausdorff(imgA::GenericImage{Bool}, imgB::GenericImage{Bool}) = evaluate(ModifiedHausdorff(), imgA, imgB)
+modified_hausdorff(imgA::Gray2dImage{Bool}, imgB::Gray2dImage{Bool}) = evaluate(ModifiedHausdorff(), imgA, imgB)
 
 # precalculate psets to accelerate computing
 function pairwise(d::GenericHausdorff,
-                  imgsA::AbstractVector{GenericImage{Bool}},
-                  imgsB::AbstractVector{GenericImage{Bool}})
+                  imgsA::AbstractVector{Gray2dImage{Bool}},
+                  imgsB::AbstractVector{Gray2dImage{Bool}})
     psetsA = [img2pset(imgA) for imgA in imgsA]
     psetsB = [img2pset(imgB) for imgB in imgsB]
 
@@ -137,7 +137,7 @@ function pairwise(d::GenericHausdorff,
     D
 end
 
-function pairwise(d::GenericHausdorff, imgs::AbstractVector{GenericImage{Bool}})
+function pairwise(d::GenericHausdorff, imgs::AbstractVector{Gray2dImage{Bool}})
     psets = [img2pset(img) for img in imgs]
 
     n = length(imgs)

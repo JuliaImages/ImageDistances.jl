@@ -9,7 +9,8 @@ result_type(dist::UnionMetrics,
 # the redundant method on `Array` is used to change the dispatch priority introduced
 # by Distances.jl:
 # `evaluate(d::UnionMetrics, a::Union{Array, ArraySlice}, b::Union{Array, ArraySlice})`
-evaluate(dist::UnionMetrics, a::Array{<:PixelLike{T1}}, b::Array{<:PixelLike{T2}}) where {T1<:FixedPoint, T2<:FixedPoint} =
+evaluate(dist::UnionMetrics, a::Array{<:FractionalLike{T1}}, b::Array{<:FractionalLike{T2}}) where {T1<:FixedPoint, T2<:FixedPoint} =
     evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
-evaluate(dist::UnionMetrics, a::GenericImage{T1}, b::GenericImage{T2}) where  {T1<:FixedPoint, T2<:FixedPoint} =
+evaluate(dist::UnionMetrics, a::Gray2dImage{T1}, b::Gray2dImage{T2}) where  {T1<:FixedPoint, T2<:FixedPoint} =
     evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
+# RGB is not supported yet

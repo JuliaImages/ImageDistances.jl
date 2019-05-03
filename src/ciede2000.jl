@@ -32,3 +32,7 @@ evaluate(dist::CIEDE2000, a::GenericImage{T1}, b::GenericImage{T2}) where  {T1<:
 
 evaluate(d::CIEDE2000, imgA::AbstractArray{<:Number}, imgB::AbstractArray{<:Number}) =
     evaluate(d, Gray.(imgA), Gray.(imgB))
+
+# fix ambiguity
+evaluate(dist::CIEDE2000, a::Gray2dImage{T1}, b::Gray2dImage{T2}) where  {T1<:FixedPoint, T2<:FixedPoint} =
+evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
