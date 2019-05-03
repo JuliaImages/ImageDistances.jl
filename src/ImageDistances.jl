@@ -20,7 +20,9 @@ using ImageCore, ColorVectorSpace
 
 const PromoteType = Union{AbstractFloat, FixedPoint, Bool} # result_type need promotion
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
+const FractionalLike = ImageCore.FractionalLike
 const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
+const Gray2dImage = ImageCore.Gray2dImage
 
 # FixedPoint and Bool are converted to Float before evaluate
 intermediatetype(::Type{T}) where T<:AbstractFloat = T
