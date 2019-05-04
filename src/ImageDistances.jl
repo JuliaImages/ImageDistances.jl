@@ -18,13 +18,14 @@ using FixedPointNumbers
 using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
 
-const PromoteType = Union{AbstractFloat, FixedPoint, Bool} # result_type need promotion
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
 const FractionalLike = ImageCore.FractionalLike
 const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
+const GenericGrayImage = ImageCore.GenericGrayImage
 const Gray2dImage = ImageCore.Gray2dImage
 
-# FixedPoint and Bool are converted to Float before evaluate
+# FixedPoint and Bool are promoted to Float before evaluate
+const PromoteType = Union{AbstractFloat, FixedPoint, Bool} # result_type need promotion
 intermediatetype(::Type{T}) where T<:AbstractFloat = T
 intermediatetype(::Type{T}) where T<:FixedPoint = FixedPointNumbers.floattype(T)
 intermediatetype(::Type{T}) where T<:Bool = Float64
