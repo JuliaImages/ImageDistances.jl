@@ -85,6 +85,11 @@ function test_numeric(dist, a, b, T; filename=nothing)
     if filename == nothing
         filename = "references/$(typeof(dist))"
     end
+    if eltype(a) <: Color3
+        filename = filename * "_Color3"
+    elseif eltype(a) <: Union{Number, AbstractGray}
+        filename = filename * "_Color1"
+    end
     @testset "numeric" begin
         @testset "$T" begin
             # @test_reference "$(filename)_$(eltype(a))_$(eltype(b)).txt" evaluate(dist, a, b)
