@@ -84,6 +84,12 @@ simply test that `dist` works for 2d image as expected, more tests go to `Distan
 function test_numeric(dist, a, b, T; filename=nothing)
     if filename == nothing
         filename = "references/$(typeof(dist))"
+
+        if eltype(a) <: Color3
+            filename = filename * "_Color3"
+        elseif eltype(a) <: Union{Number, AbstractGray}
+            filename = filename * "_Color1"
+        end
     end
     @testset "numeric" begin
         @testset "$T" begin
