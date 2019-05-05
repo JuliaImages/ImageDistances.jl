@@ -15,15 +15,16 @@ import Distances:
     pairwise
 
 using FixedPointNumbers
+using Colors
 using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
 
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
-const NumberLike = ImageCore.NumberLike
-const FractionalLike = ImageCore.FractionalLike
+const NumberLike{T<:Number} = Union{T, AbstractArray{T}}
+const FractionalLike{T<:Union{FixedPoint, AbstractFloat}} = NumberLike{T}
+const GrayLike{T<:Union{Bool, FixedPoint, AbstractFloat}} = NumberLike{T}
 const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
-const GenericGrayImage = ImageCore.GenericGrayImage
-const Gray2dImage = ImageCore.Gray2dImage
+const Gray2dImage{T<:GrayLike} = AbstractArray{<:GrayLike{T}, 2}
 
 # FixedPoint and Bool are promoted to Float before evaluate
 const PromoteType = Union{FixedPoint, Bool} # result_type need promotion
