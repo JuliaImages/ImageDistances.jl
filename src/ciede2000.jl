@@ -18,14 +18,13 @@ end
 
 CIEDE2000() = CIEDE2000(DE_2000())
 
-function evaluate(d::CIEDE2000, imgA::GenericImage, imgB::GenericImage)
+function evaluate(d::CIEDE2000, imgA::AbstractArray{<:Colorant}, imgB::AbstractArray{<:Colorant})
     sum(abs, [colordiff(ca, cb, d.metric) for (ca, cb) in zip(imgA, imgB)])
 end
 
 # helper function
 @doc (@doc CIEDE2000)
 ciede2000(imgA::GenericImage, imgB::GenericImage; metric=DE_2000()) = evaluate(CIEDE2000(metric), imgA, imgB)
-
 
 evaluate(d::CIEDE2000, imgA::AbstractArray{<:Number}, imgB::AbstractArray{<:Number}) =
     evaluate(d, Gray.(imgA), Gray.(imgB))

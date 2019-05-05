@@ -21,6 +21,7 @@ using Colors
 using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
 
+
 # These traits are already defined in ImageCore
 # copied them here for compatibility consideration
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
