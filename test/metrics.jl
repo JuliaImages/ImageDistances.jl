@@ -53,27 +53,6 @@ for dist in dist_list
                 test_numeric(dist, channelview(a), channelview(b), T)
             end
         end
-
-        # RGB image
-        type_list = generate_test_types([Float32, N0f8], [RGB])
-        for T in type_list
-            @testset "$T" begin
-                test_colwise(dist, n, sz_img, T)
-                test_pairwise(dist, m, n, sz_img, T)
-
-                a = [RGB(0.0, 0.0, 0.0) RGB(0.0, 1.0, 0.0) RGB(0.0, 1.0, 1.0)
-                     RGB(0.0, 0.0, 1.0) RGB(1.0, 0.0, 0.0) RGB(1.0, 1.0, 0.0)
-                     RGB(1.0, 1.0, 1.0) RGB(1.0, 0.0, 1.0) RGB(0.0, 0.0, 0.0)] .|> T
-                b = [RGB(0.0, 0.0, 0.0) RGB(0.0, 0.0, 1.0) RGB(1.0, 1.0, 1.0)
-                     RGB(0.0, 1.0, 0.0) RGB(1.0, 0.0, 0.0) RGB(1.0, 0.0, 1.0)
-                     RGB(0.0, 1.0, 1.0) RGB(1.0, 1.0, 0.0) RGB(0.0, 0.0, 0.0)] .|> T
-
-                # generally, for Color3 images
-                # `evaluate(dist, channelview(a), channelview(b)) != evaluate(dist, a, b)`
-                # so we need to use another reference file
-                test_numeric(dist, a, b, T)
-            end
-        end
         test_cross_type(dist, A, B, type_list)
     end
 end
