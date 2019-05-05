@@ -21,7 +21,7 @@ type_list = generate_test_types([Bool], [Gray])
 
                 a = A .|> T
                 b = B .|> T
-                test_numeric(dist, a, b, T; filename="references/Hausdorff_Color1")
+                test_numeric(dist, a, b, T; filename="references/Hausdorff_2d_Gray")
             end
         end
     end
@@ -37,7 +37,7 @@ type_list = generate_test_types([Bool], [Gray])
 
                 a = A .|> T
                 b = B .|> T
-                test_numeric(dist, a, b, T; filename="references/ModifiedHausdorff_Color1")
+                test_numeric(dist, a, b, T; filename="references/ModifiedHausdorff_2d_Gray")
             end
         end
     end

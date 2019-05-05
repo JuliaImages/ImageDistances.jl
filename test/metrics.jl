@@ -50,7 +50,6 @@ for dist in dist_list
                 # `evaluate(dist, channelview(a), channelview(b)) != evaluate(dist, a, b)`
                 # so we need to use another reference file
                 test_numeric(dist, a, b, T)
-                test_numeric(dist, channelview(a), channelview(b), T; filename = "references/$(typeof(dist))_channelwise_Color3")
             end
         end
         test_cross_type(dist, A, B, type_list)
