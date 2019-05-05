@@ -76,19 +76,22 @@ function test_pairwise(dist, nA, nB, sz, T)
     end
 end
 
+_base_colorant_type(::Type{<:Number}) = Gray
+_base_colorant_type(::Type{T}) where T<:Colorant = base_colorant_type(T)
 """
     test_numeric(dist, a, b, T; filename=nothing)
 
 simply test that `dist` works for 2d image as expected, more tests go to `Distances.jl`
 """
 function test_numeric(dist, a, b, T; filename=nothing)
+    size(a) == size(b) || error("a and b should be the same size")
     if filename == nothing
-        filename = "references/$(typeof(dist))"
+        filename = "references/$(typeof(dist))_$(ndims(a))d"
 
         if eltype(a) <: Color3
-            filename = filename * "_Color3"
+            filename = filename * "_$(_base_colorant_type(T))"
         elseif eltype(a) <: Union{Number, AbstractGray}
-            filename = filename * "_Color1"
+            filename = filename * "_$(_base_colorant_type(T))"
         end
     end
     @testset "numeric" begin
@@ -97,6 +100,20 @@ function test_numeric(dist, a, b, T; filename=nothing)
             @test_reference "$(filename).txt" Float64(evaluate(dist, a, b))
         end
     end
+end
+
+"""
+    test_cross_type(dist, a, b, type_list)
+
+simply test if operations between `N0f8`, `Bool` and `Float32` types works as expected.
+`a` and `b` should be simple enough to get rid of InexactError.
+"""
+function test_cross_type(dist, a, b, type_list)
+    size(a) == size(b) || error("a and b should be the same size")
+    rsts = [[evaluate(dist, Ta.(a), Tb.(b)),
+             evaluate(dist, Tb.(a), Ta.(b))] for (Ta, Tb) in subsets(type_list, 2)]
+    rsts = hcat(rsts...)
+    @test all(isapprox.(rsts, rsts[1]; rtol=1e-5))
 end
 
 function test_Metric(d, sz, T)

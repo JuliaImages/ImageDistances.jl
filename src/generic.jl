@@ -80,13 +80,10 @@ end
 # fallback
 result_type(dist::PreMetric,
         ::AbstractArray{<:Union{GenericImage{T1}, PixelLike{T1}}},
-        ::AbstractArray{<:Union{GenericImage{T2}, PixelLike{T2}}}) where {T1<:PromoteType, T2<:PromoteType} =
+        ::AbstractArray{<:Union{GenericImage{T2}, PixelLike{T2}}}) where {T1<:Number, T2<:Number} =
     Float64
 
-evaluate(dist::PreMetric, a::AbstractArray{<:Colorant}, b::AbstractArray{<:Colorant}) =
-    evaluate(dist, rawview(channelview(a)), rawview(channelview(b)))
-
-evaluate(dist::PreMetric, a::GenericGrayImage{T1}, b::GenericGrayImage{T2}) where  {T1<:FixedPoint, T2<:FixedPoint} =
+evaluate(dist::PreMetric, a::GenericGrayImage{T1}, b::GenericGrayImage{T2}) where  {T1<:PromoteType, T2<:PromoteType} =
     evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
 
 function evaluate(dist::PreMetric, a::AbstractArray{<:Color3{T1}}, b::AbstractArray{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}

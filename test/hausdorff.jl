@@ -11,8 +11,8 @@ type_list = generate_test_types([Bool], [Gray])
 @testset "GenericHausdorff" begin
     @info "test: GenericHausdorff"
 
+    dist = Hausdorff()
     @testset "Hausdorff" begin
-        dist = Hausdorff()
         for T in type_list
             @testset "$T" begin
                 test_Metric(dist, sz_img, T)
@@ -21,13 +21,14 @@ type_list = generate_test_types([Bool], [Gray])
 
                 a = A .|> T
                 b = B .|> T
-                test_numeric(dist, a, b, T; filename="references/Hausdorff_Color1")
+                test_numeric(dist, a, b, T; filename="references/Hausdorff_2d_Gray")
             end
         end
     end
+    test_cross_type(dist, A, B, type_list)
 
+    dist = ModifiedHausdorff()
     @testset "ModifiedHausdorff" begin
-        dist = ModifiedHausdorff()
         for T in type_list
             @testset "$T" begin
                 test_SemiMetric(dist, sz_img, T)
@@ -36,8 +37,9 @@ type_list = generate_test_types([Bool], [Gray])
 
                 a = A .|> T
                 b = B .|> T
-                test_numeric(dist, a, b, T; filename="references/ModifiedHausdorff_Color1")
+                test_numeric(dist, a, b, T; filename="references/ModifiedHausdorff_2d_Gray")
             end
         end
     end
+    test_cross_type(dist, A, B, type_list)
 end
