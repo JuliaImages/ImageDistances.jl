@@ -14,17 +14,23 @@ import Distances:
     colwise!,
     pairwise
 
+# TODO: remove dependency on FixedPointNumbers and Colors
+# https://github.com/JuliaImages/Images.jl/issues/802
 using FixedPointNumbers
 using Colors
 using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
 
+# These traits are already defined in ImageCore
+# copied them here for compatibility consideration
 const PixelLike{T<:Number} = Union{T, Colorant{T}}
-const NumberLike{T<:Number} = Union{T, AbstractArray{T}}
-const FractionalLike{T<:Union{FixedPoint, AbstractFloat}} = NumberLike{T}
-const GrayLike{T<:Union{Bool, FixedPoint, AbstractFloat}} = NumberLike{T}
+const NumberLike{T<:Number} = Union{T, AbstractGray{T}}
+const RealLike{T<:Real} = NumberLike{T}
+const FractionalLike{T<:Union{FixedPoint, AbstractFloat}} = RealLike{T}
+const GrayLike{T<:Union{Bool, FixedPoint, AbstractFloat}} = RealLike{T}
 const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
-const Gray2dImage{T<:GrayLike} = AbstractArray{<:GrayLike{T}, 2}
+const GenericGrayImage{T<:GrayLike, N} = AbstractArray{<:GrayLike{T}, N}
+const Gray2dImage{T<:GrayLike} = GenericGrayImage{T, 2}
 
 # FixedPoint and Bool are promoted to Float before evaluate
 const PromoteType = Union{FixedPoint, Bool} # result_type need promotion

@@ -109,23 +109,7 @@ function test_cross_type(dist, a, b, type_list)
     rsts = [[evaluate(dist, Ta.(a), Tb.(b)),
              evaluate(dist, Tb.(a), Ta.(b))] for (Ta, Tb) in subsets(type_list, 2)]
     rsts = hcat(rsts...)
-    @test all(rsts .≈ rsts[1])
-
-    # some functions support AbstractArray{<:Number, 3}, e.g, euclidean
-    # some don't, e.g., ciede2000
-    support_3d_numarray = begin try
-            evaluate(dist, channelview(a), channelview(b))
-            true
-        catch
-            false
-        end end
-    support_3d_numarray || return nothing
-
-    rsts = [[evaluate(dist, channelview(Ta.(a)), channelview(Tb.(b))),
-            evaluate(dist, channelview(Tb.(b)), channelview(Ta.(a)))
-            ] for (Ta, Tb) in subsets(type_list, 2)]
-    rsts = hcat(rsts...)
-    @test all(rsts .≈ rsts[1])
+    @test all(isapprox.(rsts, rsts[1]; rtol=1e-5))
 end
 
 function test_Metric(d, sz, T)

@@ -11,7 +11,9 @@
 #
 # For this reason, we must override the dispatch priorities to make things work,
 # we only overload the definition by inserting `intermediatetype` to promote types,
-# so it's quite safe IMO
+# so it's quite safe
+#
+# TODO: reduce memory allocation
 #
 # Johnny Chen <johnnychen94@hotmail.com>
 
@@ -31,15 +33,13 @@ function evaluate(dist::UnionMetrics, a::AbstractArray{<:Color3{T1}}, b::Abstrac
     evaluate(dist, CT1.(a), CT2.(b))
 end
 
-
 # the redundant method on `Array` is used to change the dispatch priority introduced
 # by Distances.jl:
 # `evaluate(d::UnionMetrics, a::Union{Array, ArraySlice}, b::Union{Array, ArraySlice})`
 evaluate(dist::UnionMetrics, a::Array{<:NumberLike{T1}}, b::Array{<:NumberLike{T2}}) where {T1<:PromoteType, T2<:PromoteType} =
     evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
 
-
-function evaluate(dist::UnionMetrics, a::Array{<:Color3{T1}}, b::Array{<:Color3{T2}}) where {T1<:PromoteType, T2<:PromoteType}
+function evaluate(dist::UnionMetrics, a::Array{<:Color3{T1}}, b::Array{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
     CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
     CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
     evaluate(dist, CT1.(a), CT2.(b))
