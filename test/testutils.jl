@@ -84,6 +84,12 @@ simply test that `dist` works for 2d image as expected, more tests go to `Distan
 function test_numeric(dist, a, b, T; filename=nothing)
     if filename == nothing
         filename = "references/$(typeof(dist))"
+
+        if eltype(a) <: Color3
+            filename = filename * "_Color3"
+        elseif eltype(a) <: Union{Number, AbstractGray}
+            filename = filename * "_Color1"
+        end
     end
     @testset "numeric" begin
         @testset "$T" begin
@@ -91,6 +97,35 @@ function test_numeric(dist, a, b, T; filename=nothing)
             @test_reference "$(filename).txt" Float64(evaluate(dist, a, b))
         end
     end
+end
+
+"""
+    test_cross_type(dist, a, b, type_list)
+
+simply test if operations between `N0f8`, `Bool` and `Float32` types works as expected.
+`a` and `b` should be simple enough to get rid of InexactError.
+"""
+function test_cross_type(dist, a, b, type_list)
+    rsts = [[evaluate(dist, Ta.(a), Tb.(b)),
+             evaluate(dist, Tb.(a), Ta.(b))] for (Ta, Tb) in subsets(type_list, 2)]
+    rsts = hcat(rsts...)
+    @test all(rsts .≈ rsts[1])
+
+    # some functions support AbstractArray{<:Number, 3}, e.g, euclidean
+    # some don't, e.g., ciede2000
+    support_3d_numarray = begin try
+            evaluate(dist, channelview(a), channelview(b))
+            true
+        catch
+            false
+        end end
+    support_3d_numarray || return nothing
+
+    rsts = [[evaluate(dist, channelview(Ta.(a)), channelview(Tb.(b))),
+            evaluate(dist, channelview(Tb.(b)), channelview(Ta.(a)))
+            ] for (Ta, Tb) in subsets(type_list, 2)]
+    rsts = hcat(rsts...)
+    @test all(rsts .≈ rsts[1])
 end
 
 function test_Metric(d, sz, T)

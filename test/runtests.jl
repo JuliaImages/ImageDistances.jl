@@ -1,6 +1,7 @@
 using Test
 using ImageCore, Colors
 using FixedPointNumbers
+using IterTools
 using ReferenceTests
 using ImageDistances
 
