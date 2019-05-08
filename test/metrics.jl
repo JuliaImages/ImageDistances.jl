@@ -46,11 +46,7 @@ for dist in dist_list
                 a = A .|> T
                 b = B .|> T
 
-                # generally, for Color3 images
-                # `evaluate(dist, channelview(a), channelview(b)) != evaluate(dist, a, b)`
-                # so we need to use another reference file
                 test_numeric(dist, a, b, T)
-                test_numeric(dist, channelview(a), channelview(b), T)
             end
         end
         test_cross_type(dist, A, B, type_list)
