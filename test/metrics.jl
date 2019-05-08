@@ -1,6 +1,7 @@
 # Test Metrics from Distances.jl
 m, n = 3, 5
 sz_img = (3, 3)
+sz_img_3 = (3, 3, 3)
 
 dist_list = [SqEuclidean(),
             Euclidean(),
@@ -21,6 +22,7 @@ for dist in dist_list
             @testset "$T" begin
                 test_colwise(dist, n, sz_img, T)
                 test_pairwise(dist, m, n, sz_img, T)
+                test_ndarray(dist, sz_img_3, T)
 
                 a = A .|> T
                 b = B .|> T
@@ -42,6 +44,7 @@ for dist in dist_list
             @testset "$T" begin
                 test_colwise(dist, n, sz_img, T)
                 test_pairwise(dist, m, n, sz_img, T)
+                test_ndarray(dist, sz_img_3, T)
 
                 a = A .|> T
                 b = B .|> T

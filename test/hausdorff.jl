@@ -4,6 +4,7 @@ A = [true false false
      false false true]
 B = copy(A); B[1,2] = true;
 sz_img = (3,3)
+sz_img_3 = (3, 3, 3)
 m, n = 3, 5
 
 type_list = generate_test_types([Bool], [Gray])
@@ -16,6 +17,7 @@ type_list = generate_test_types([Bool], [Gray])
         for T in type_list
             @testset "$T" begin
                 test_Metric(dist, sz_img, T)
+                test_ndarray(dist, sz_img_3, T)
                 test_colwise(dist, n, sz_img, T)
                 test_pairwise(dist, m, n, sz_img, T)
 
@@ -32,6 +34,7 @@ type_list = generate_test_types([Bool], [Gray])
         for T in type_list
             @testset "$T" begin
                 test_SemiMetric(dist, sz_img, T)
+                test_ndarray(dist, sz_img_3, T)
                 test_colwise(dist, n, sz_img, T)
                 test_pairwise(dist, m, n, sz_img, T)
 
