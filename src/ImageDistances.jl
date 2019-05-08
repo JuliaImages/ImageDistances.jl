@@ -39,7 +39,7 @@ intermediatetype(::Type{T}) where T<:Any = T # make type piracy in metrics.jl sa
 intermediatetype(::Type{T}) where T<:FixedPoint = FixedPointNumbers.floattype(T)
 intermediatetype(::Type{T}) where T<:Bool = Float64
 
-include("metrics.jl")
+include("metrics_distances.jl")
 include("generic.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
