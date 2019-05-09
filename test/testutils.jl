@@ -134,3 +134,12 @@ function test_SemiMetric(d, sz, T)
     @test evaluate(d, x, x) ≈ 0
     @test evaluate(d, x, y) ≈ evaluate(d, y, x)
 end
+
+function test_ndarray(d, sz, T)
+    x = rand(T, sz)
+    y = rand(T, sz)
+    @test_nowarn evaluate(d, x, y)
+
+    T <: AbstractGray || return nothing
+    @test evaluate(d, x, y) == evaluate(d, channelview(x), channelview(y))
+end
