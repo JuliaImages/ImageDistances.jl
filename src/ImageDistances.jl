@@ -39,8 +39,9 @@ intermediatetype(::Type{T}) where T<:Any = T # make type piracy in metrics.jl sa
 intermediatetype(::Type{T}) where T<:FixedPoint = FixedPointNumbers.floattype(T)
 intermediatetype(::Type{T}) where T<:Bool = Float64
 
-include("metrics.jl")
 include("generic.jl")
+include("metrics_distances.jl")
+include("metrics.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
 
@@ -83,11 +84,21 @@ export
     Hausdorff,
     ModifiedHausdorff,
     CIEDE2000,
+    SumAbsoluteDifference,
+    SumSquaredDifference,
+    MeanAbsoluteError,
+    MeanSquaredError,
+    RootMeanSquaredError,
 
     # helper functions
     hausdorff,
     modified_hausdorff,
-    ciede2000
+    ciede2000,
+    sad,
+    ssd,
+    mae,
+    mse,
+    rmse
 
 """
 `ImageDistances` is an image-related distance package built based on `Distances`.
