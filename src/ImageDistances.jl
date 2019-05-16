@@ -1,5 +1,6 @@
 module ImageDistances
 
+using Reexport
 using Distances
 using Distances:
     eval_op,
@@ -18,7 +19,7 @@ import Distances:
 # https://github.com/JuliaImages/Images.jl/issues/802
 using FixedPointNumbers
 using Colors
-using FixedPointNumbers: floattype
+using FixedPointNumbers: floattype # TODO: floattype exported since v0.6.1
 using ImageCore, ColorVectorSpace
 
 
@@ -45,6 +46,8 @@ include("metrics.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
 
+include("ImageQualityIndexes/ImageQualityIndexes.jl")
+@reexport using .ImageQualityIndexes
 
 # reexport symbols from Distances.jl
 # delibrately not use Reexport
