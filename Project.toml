@@ -1,6 +1,6 @@
 name = "ImageDistances"
 uuid = "51556ac3-7006-55f5-8cb3-34580c88182d"
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 ColorVectorSpace = "c3611d14-8923-5661-9e6a-0046d554d3a4"
