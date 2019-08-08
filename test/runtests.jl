@@ -1,6 +1,5 @@
 using Test
-using ImageCore, Colors
-using FixedPointNumbers
+using ImageCore
 using IterTools
 using ReferenceTests
 using ImageDistances
@@ -9,8 +8,8 @@ using ImageDistances
 include("testutils.jl")
 
 
-include("hausdorff.jl")
+# include("hausdorff.jl")
 include("metrics.jl")
-include("ciede2000.jl")
+# include("ciede2000.jl")
 
 nothing

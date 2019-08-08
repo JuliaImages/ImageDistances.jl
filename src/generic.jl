@@ -78,16 +78,19 @@ function pairwise(d::SemiMetric, imgs::AbstractVector{<:GenericImage})
 end
 
 # fallback
+
 result_type(dist::PreMetric,
-        ::AbstractArray{<:Union{GenericImage{T1}, PixelLike{T1}}},
-        ::AbstractArray{<:Union{GenericImage{T2}, PixelLike{T2}}}) where {T1<:Number, T2<:Number} =
-    Float64
+            a::AbstractArray{<:AbstractArray},
+            b::AbstractArray{<:AbstractArray}) =
+    result_type(dist, a[1], b[1]) # TODO: use view
 
-evaluate(dist::PreMetric, a::GenericGrayImage{T1}, b::GenericGrayImage{T2}) where  {T1<:PromoteType, T2<:PromoteType} =
-    evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
-
-function evaluate(dist::PreMetric, a::AbstractArray{<:Color3{T1}}, b::AbstractArray{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
-    CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
-    CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
-    evaluate(dist, CT1.(a), CT2.(b))
+for (ATa, ATb) in ((AbstractGray, AbstractGray),
+                   (AbstractGray, Number      ),
+                   (Number      , AbstractGray),
+                   (PromoteType , PromoteType ))
+    @eval function result_type(dist::PreMetric, a::Type{Ta}, b::Type{Tb}) where {Ta<:$ATa, Tb<:$ATb}
+        T1 = eltype(floattype(Ta))
+        T2 = eltype(floattype(Tb))
+        result_type(dist, T1, T2)
+    end
 end
