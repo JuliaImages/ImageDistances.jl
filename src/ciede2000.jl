@@ -18,26 +18,19 @@ end
 
 CIEDE2000() = CIEDE2000(DE_2000())
 
-function evaluate(d::CIEDE2000, imgA::AbstractArray{<:Colorant}, imgB::AbstractArray{<:Colorant})
-    sum(abs, [colordiff(ca, cb, d.metric) for (ca, cb) in zip(imgA, imgB)])
+# TODO: remove these when https://github.com/JuliaGraphics/Colors.jl/pull/338 is merged and tagged
+# expand colordiff to number type
+_colordiff(ca,cb; metric) = colordiff(ca, cb, metric)
+_colordiff(ca::Number, cb::AbstractGray; metric) = colordiff(Gray(ca), cb, metric)
+_colordiff(ca::AbstractGray, cb::Number; metric) = colordiff(ca, Gray(cb), metric)
+_colordiff(ca::Number, cb::Number; metric) = colordiff(Gray(ca), Gray(cb), metric)
+
+# colordiff converts image to Lab space, so we don't promote the storage type here
+function (d::CIEDE2000)(imgA::GenericImage, imgB::GenericImage)
+    sum(abs, _colordiff.(imgA, imgB; metric=d.metric))
 end
 
 # helper function
 @doc (@doc CIEDE2000)
-ciede2000(imgA::GenericImage, imgB::GenericImage; metric=DE_2000()) = evaluate(CIEDE2000(metric), imgA, imgB)
-
-evaluate(d::CIEDE2000, imgA::AbstractArray{<:Number}, imgB::AbstractArray{<:Number}) =
-    evaluate(d, Gray.(imgA), Gray.(imgB))
-evaluate(d::CIEDE2000, imgA::AbstractArray{<:Number}, imgB::AbstractArray{<:AbstractGray}) =
-    evaluate(d, eltype(imgB).(imgA), imgB)
-evaluate(d::CIEDE2000, imgA::AbstractArray{<:AbstractGray}, imgB::AbstractArray{<:Number}) =
-    evaluate(d, imgA, eltype(imgA).(imgB))
-
-evaluate(dist::CIEDE2000, a::GenericGrayImage{T1}, b::GenericGrayImage{T2}) where  {T1<:PromoteType, T2<:PromoteType} =
-    evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
-
-function evaluate(dist::CIEDE2000, a::AbstractArray{<:Color3{T1}}, b::AbstractArray{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
-    CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
-    CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
-    evaluate(dist, CT1.(a), CT2.(b))
-end
+ciede2000(imgA::GenericImage, imgB::GenericImage; metric=DE_2000()) =
+    CIEDE2000(metric)(imgA, imgB)

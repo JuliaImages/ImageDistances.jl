@@ -10,6 +10,6 @@ include("testutils.jl")
 
 include("hausdorff.jl")
 include("metrics.jl")
-# include("ciede2000.jl")
+include("ciede2000.jl")
 
 nothing

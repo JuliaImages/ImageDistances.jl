@@ -28,7 +28,7 @@ include("generic.jl")
 include("metrics_distances.jl")
 include("metrics.jl")
 include("hausdorff.jl")
-# include("ciede2000.jl")
+include("ciede2000.jl")
 
 
 # reexport symbols from Distances.jl
@@ -68,7 +68,7 @@ export
     GenericHausdorff,
     Hausdorff,
     ModifiedHausdorff,
-#     CIEDE2000,
+    CIEDE2000,
     SumAbsoluteDifference,
     SumSquaredDifference,
     MeanAbsoluteError,
@@ -78,7 +78,7 @@ export
     # helper functions
     hausdorff,
     modified_hausdorff,
-#     ciede2000,
+    ciede2000,
     sad,
     ssd,
     mae,
