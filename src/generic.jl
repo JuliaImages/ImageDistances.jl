@@ -87,8 +87,9 @@ result_type(dist::PreMetric,
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
                    (AbstractGray, Number      ),
                    (Number      , AbstractGray),
-                   (PromoteType , PromoteType ))
-    @eval function result_type(dist::PreMetric, a::Type{Ta}, b::Type{Tb}) where {Ta<:$ATa, Tb<:$ATb}
+                   (PromoteType , PromoteType ),
+                   (Color3      , Color3      ))
+    @eval function result_type(dist::PreMetric, ::Type{Ta}, ::Type{Tb}) where {Ta<:$ATa, Tb<:$ATb}
         T1 = eltype(floattype(Ta))
         T2 = eltype(floattype(Tb))
         result_type(dist, T1, T2)
