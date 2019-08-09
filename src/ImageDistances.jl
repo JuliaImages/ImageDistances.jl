@@ -15,13 +15,17 @@ import Distances:
 using ImageCore, ColorVectorSpace
 using ImageCore: GenericImage, Pixel
 
+# remove this when Distances.jl merges PR
+# https://github.com/JuliaStats/Distances.jl/pull/139
+# and tagged a release
+evaluate(dist::PreMetric, a, b) = dist(a, b)
 
 # FixedPoint and Bool are promoted to Float before evaluate
 const PromoteType = Union{FixedPoint, Bool}
 
 include("generic.jl")
 include("metrics_distances.jl")
-# include("metrics.jl")
+include("metrics.jl")
 # include("hausdorff.jl")
 # include("ciede2000.jl")
 
@@ -58,27 +62,27 @@ export
     hamming,
     totalvariation
 
-# export
-#     # concrete types
+export
+    # concrete types
 #     GenericHausdorff,
 #     Hausdorff,
 #     ModifiedHausdorff,
 #     CIEDE2000,
-#     SumAbsoluteDifference,
-#     SumSquaredDifference,
-#     MeanAbsoluteError,
-#     MeanSquaredError,
-#     RootMeanSquaredError,
-#
-#     # helper functions
+    SumAbsoluteDifference,
+    SumSquaredDifference,
+    MeanAbsoluteError,
+    MeanSquaredError,
+    RootMeanSquaredError,
+
+    # helper functions
 #     hausdorff,
 #     modified_hausdorff,
 #     ciede2000,
-#     sad,
-#     ssd,
-#     mae,
-#     mse,
-#     rmse
+    sad,
+    ssd,
+    mae,
+    mse,
+    rmse
 
 """
 `ImageDistances` is an image-related distance package built based on `Distances`.

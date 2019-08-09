@@ -10,11 +10,11 @@ dist_list = [SqEuclidean(),
             Minkowski(2.5),
             Hamming(),
             TotalVariation(),
-            # SumAbsoluteDifference(),
-            # SumSquaredDifference(),
-            # MeanAbsoluteError(),
-            # MeanSquaredError(),
-            # RootMeanSquaredError(),
+            SumAbsoluteDifference(),
+            SumSquaredDifference(),
+            MeanAbsoluteError(),
+            MeanSquaredError(),
+            RootMeanSquaredError(),
             ]
 
 for dist in dist_list
