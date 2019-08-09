@@ -1,5 +1,6 @@
 module ImageDistances
 
+using MappedArrays
 using Distances
 using Distances:
     get_common_ncols,
@@ -13,7 +14,7 @@ import Distances:
     pairwise
 
 using ImageCore, ColorVectorSpace
-using ImageCore: GenericImage, Pixel
+using ImageCore: GenericImage, GenericGrayImage, Pixel
 
 # remove this when Distances.jl merges PR
 # https://github.com/JuliaStats/Distances.jl/pull/139
@@ -26,7 +27,7 @@ const PromoteType = Union{FixedPoint, Bool}
 include("generic.jl")
 include("metrics_distances.jl")
 include("metrics.jl")
-# include("hausdorff.jl")
+include("hausdorff.jl")
 # include("ciede2000.jl")
 
 
@@ -64,9 +65,9 @@ export
 
 export
     # concrete types
-#     GenericHausdorff,
-#     Hausdorff,
-#     ModifiedHausdorff,
+    GenericHausdorff,
+    Hausdorff,
+    ModifiedHausdorff,
 #     CIEDE2000,
     SumAbsoluteDifference,
     SumSquaredDifference,
@@ -75,8 +76,8 @@ export
     RootMeanSquaredError,
 
     # helper functions
-#     hausdorff,
-#     modified_hausdorff,
+    hausdorff,
+    modified_hausdorff,
 #     ciede2000,
     sad,
     ssd,
