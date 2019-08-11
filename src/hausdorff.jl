@@ -133,11 +133,11 @@ function pairwise(d::GenericHausdorff,
 
     for j=1:n
       psetB = psetsB[j]
-      for i=1:min(j, m)
+      for i=min(m, j+1):m
         psetA = psetsA[i]
         D[i,j] = evaluate_pset(d, psetA, psetB)
       end
-      for i=min(j+1,m):m
+      for i=1:min(m, j+1)
         psetA = psetsA[i]
         D[i,j] = evaluate_pset(d, psetA, psetB)
       end
