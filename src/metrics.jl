@@ -44,7 +44,7 @@ struct RootMeanSquaredError <: Metric end
 
 # SumAbsoluteDifference
 (::SumAbsoluteDifference)(a::GenericImage, b::GenericImage) =
-    evaluate(Cityblock(), a, b)
+    Cityblock()(a, b)
 
 @doc (@doc SumAbsoluteDifference)
 sad(a::GenericImage, b::GenericImage) = SumAbsoluteDifference()(a, b)
@@ -52,7 +52,7 @@ sad(a::GenericImage, b::GenericImage) = SumAbsoluteDifference()(a, b)
 
 # SumSquaredDifference
 (::SumSquaredDifference)(a::GenericImage, b::GenericImage) =
-    evaluate(SqEuclidean(), a, b)
+    SqEuclidean()(a, b)
 
 @doc (@doc SumSquaredDifference)
 ssd(a::GenericImage, b::GenericImage) = SumSquaredDifference()(a, b)

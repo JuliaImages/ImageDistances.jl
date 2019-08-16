@@ -8,7 +8,6 @@ using Distances:
     get_pairwise_dims
 import Distances:
     result_type,
-    evaluate,
     colwise,
     colwise!,
     pairwise
@@ -16,13 +15,8 @@ import Distances:
 using ImageCore, ColorVectorSpace
 using ImageCore: GenericImage, GenericGrayImage, Pixel
 
-# remove this when Distances.jl merges PR
-# https://github.com/JuliaStats/Distances.jl/pull/139
-# and tagged a release
-evaluate(dist::PreMetric, a, b) = dist(a, b)
-
 # FixedPoint and Bool are promoted to Float before evaluate
-const PromoteType = Union{FixedPoint, Bool}
+const PromoteType = Union{FixedPoint,Bool}
 
 include("generic.jl")
 include("metrics_distances.jl")

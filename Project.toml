@@ -9,7 +9,7 @@ ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 MappedArrays = "dbb5928d-eab1-5f90-85c2-b9b0edb7c900"
 
 [compat]
-Distances = "0.8.0"
+Distances = "0.8.1"
 ImageCore = ">= 0.8.3"
 julia = "1"
 

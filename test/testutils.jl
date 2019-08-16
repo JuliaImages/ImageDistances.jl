@@ -40,8 +40,8 @@ function test_colwise(dist, n, sz, T)
         r1 = zeros(RT, n)
         r2 = zeros(RT, n)
         for j = 1:n
-            r1[j] = evaluate(dist, vec_imgsA[j], vec_imgsB[j])
-            r2[j] = evaluate(dist, mat_imgsA[1,j], mat_imgsB[1,j])
+            r1[j] = dist(vec_imgsA[j], vec_imgsB[j])
+            r2[j] = dist(mat_imgsA[1,j], mat_imgsB[1,j])
         end
         @test all(colwise(dist, vec_imgsA, vec_imgsB) .≈ r1)
         @test all(colwise(dist, mat_imgsA, mat_imgsB) .≈ r2)
@@ -65,10 +65,10 @@ function test_pairwise(dist, nA, nB, sz, T)
         rAB = zeros(RT, nA, nB)
         rAA = zeros(RT, nA, nA)
         for j = 1:nB, i = 1:nA
-            rAB[i, j] = evaluate(dist, vec_imgsA[i], vec_imgsB[j])
+            rAB[i, j] = dist(vec_imgsA[i], vec_imgsB[j])
         end
         for j = 1:nA, i = 1:nA
-            rAA[i, j] = evaluate(dist, vec_imgsA[i], vec_imgsA[j])
+            rAA[i, j] = dist(vec_imgsA[i], vec_imgsA[j])
         end
         @test pairwise(dist, vec_imgsA, vec_imgsB) ≈ rAB
         @test pairwise(dist, vec_imgsA, vec_imgsA) ≈ rAA
@@ -96,8 +96,8 @@ function test_numeric(dist, a, b, T; filename=nothing)
     end
     @testset "numeric" begin
         @testset "$T" begin
-            # @test_reference "$(filename)_$(eltype(a))_$(eltype(b)).txt" evaluate(dist, a, b)
-            @test_reference "$(filename).txt" Float64(evaluate(dist, a, b))
+            # @test_reference "$(filename)_$(eltype(a))_$(eltype(b)).txt" dist(a, b)
+            @test_reference "$(filename).txt" Float64(dist(a, b))
         end
     end
 end
@@ -110,8 +110,8 @@ simply test if operations between `N0f8`, `Bool` and `Float32` types works as ex
 """
 function test_cross_type(dist, a, b, type_list)
     size(a) == size(b) || error("a and b should be the same size")
-    rsts = [[evaluate(dist, Ta.(a), Tb.(b)),
-             evaluate(dist, Tb.(a), Ta.(b))] for (Ta, Tb) in subsets(type_list, 2)]
+    rsts = [[dist(Ta.(a), Tb.(b)),
+             dist(Tb.(a), Ta.(b))] for (Ta, Tb) in subsets(type_list, 2)]
     rsts = hcat(rsts...)
     @test all(isapprox.(rsts, rsts[1]; rtol=1e-5))
 end
@@ -120,26 +120,26 @@ function test_Metric(d, sz, T)
     x = rand(T, sz)
     y = rand(T, sz)
     z = rand(T, sz)
-    @test evaluate(d, x, y) >= 0
-    @test evaluate(d, x, x) ≈ 0
-    @test evaluate(d, x, y) ≈ evaluate(d, y, x)
-    @test evaluate(d, x, y) + evaluate(d, y, z) >= evaluate(d, x, z)
+    @test d(x, y) >= 0
+    @test d(x, x) ≈ 0
+    @test d(x, y) ≈ d(y, x)
+    @test d(x, y) + d(y, z) >= d(x, z)
 end
 
 function test_SemiMetric(d, sz, T)
     x = rand(T, sz)
     y = rand(T, sz)
     z = rand(T, sz)
-    @test evaluate(d, x, y) >= 0
-    @test evaluate(d, x, x) ≈ 0
-    @test evaluate(d, x, y) ≈ evaluate(d, y, x)
+    @test d(x, y) >= 0
+    @test d(x, x) ≈ 0
+    @test d(x, y) ≈ d(y, x)
 end
 
 function test_ndarray(d, sz, T)
     x = rand(T, sz)
     y = rand(T, sz)
-    @test_nowarn evaluate(d, x, y)
+    @test_nowarn d(x, y)
 
     T <: AbstractGray || return nothing
-    @test evaluate(d, x, y) == evaluate(d, channelview(x), channelview(y))
+    @test d(x, y) == d(channelview(x), channelview(y))
 end
