@@ -41,27 +41,13 @@ end
 ### ambiguities
 
 # These metrics in Distances.jl define their own result_type
-const independentmetrics = (CorrDist, Mahalanobis, SqMahalanobis, SpanNormDist)
-const UnionMetrics = Distances.UnionMetrics
-const UnionWeightedMetrics = Distances.UnionWeightedMetrics
+const independentmetrics = (CorrDist, Mahalanobis, SqMahalanobis, SpanNormDist, Distances.UnionMetrics, Distances.UnionWeightedMetrics)
 
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
                    (AbstractGray, Number),
                    (Number, AbstractGray),
                    (PromoteType, PromoteType),
                    (Color3, Color3))
-    @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
-        T1 = eltype(floattype(Ta))
-        T2 = eltype(floattype(Tb))
-        result_type(dist, T1, T2)
-    end
-
-    @eval function result_type(dist::UnionWeightedMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
-        T1 = eltype(floattype(Ta))
-        T2 = eltype(floattype(Tb))
-        result_type(dist, T1, T2)
-    end
-
     for M in independentmetrics
         @eval function result_type(dist::$M, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
             T1 = eltype(floattype(Ta))
