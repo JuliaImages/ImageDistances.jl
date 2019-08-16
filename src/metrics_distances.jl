@@ -1,6 +1,6 @@
 # patches to Distances.jl
 
-const metrics = Distances.metrics
+const metrics = (SqEuclidean, Euclidean, Cityblock, Minkowski, Hamming, TotalVariation)
 
 # Before evaluation, unwrap the AbstractGray colorant and promote storage type
 #
