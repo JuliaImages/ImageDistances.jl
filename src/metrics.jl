@@ -1,5 +1,5 @@
 @doc raw"""
-    CityBlock <: Metric
+    Cityblock <: Metric
     SumAbsoluteDifference <: Metric
     cityblock(x, y)
     sad(x, y)
@@ -43,54 +43,40 @@ Root Mean Square Error(rmse) is calculated by `sqrt(mse(x, y))`
 struct RootMeanSquaredError <: Metric end
 
 # SumAbsoluteDifference
-evaluate(::SumAbsoluteDifference, a::GenericImage, b::GenericImage) = cityblock(a, b)
+(::SumAbsoluteDifference)(a::GenericImage, b::GenericImage) =
+    Cityblock()(a, b)
 
 @doc (@doc SumAbsoluteDifference)
-sad(a::GenericImage, b::GenericImage) = evaluate(SumAbsoluteDifference(), a, b)
+sad(a::GenericImage, b::GenericImage) = SumAbsoluteDifference()(a, b)
 
 
 # SumSquaredDifference
-evaluate(::SumSquaredDifference, a::GenericImage, b::GenericImage) = sqeuclidean(a, b)
+(::SumSquaredDifference)(a::GenericImage, b::GenericImage) =
+    SqEuclidean()(a, b)
 
 @doc (@doc SumSquaredDifference)
-ssd(a::GenericImage, b::GenericImage) = evaluate(SumSquaredDifference(), a, b)
+ssd(a::GenericImage, b::GenericImage) = SumSquaredDifference()(a, b)
 
 
 # MeanAbsoluteError
-evaluate(::MeanAbsoluteError, a::GenericImage, b::GenericImage) = sad(a, b) / length(a)
+(::MeanAbsoluteError)(a::GenericImage, b::GenericImage) =
+    SumAbsoluteDifference()(a, b) / length(a)
 
 @doc (@doc MeanAbsoluteError)
-mae(a::GenericImage, b::GenericImage) = evaluate(MeanAbsoluteError(), a, b)
+mae(a::GenericImage, b::GenericImage) = MeanAbsoluteError()(a, b)
 
 
 # MeanSquaredError
-evaluate(::MeanSquaredError, a::GenericImage, b::GenericImage) = ssd(a, b) / length(a)
+(::MeanSquaredError)(a::GenericImage, b::GenericImage) =
+    SumSquaredDifference()(a, b) / length(a)
 
 @doc (@doc MeanSquaredError)
-mse(a::GenericImage, b::GenericImage) = evaluate(MeanSquaredError(), a, b)
+mse(a::GenericImage, b::GenericImage) = MeanSquaredError()(a, b)
 
 
 # RootMeanSquaredError
-evaluate(::RootMeanSquaredError, a::GenericImage, b::GenericImage) = sqrt(mse(a, b))
+(::RootMeanSquaredError)(a::GenericImage, b::GenericImage) =
+    sqrt(MeanSquaredError()(a, b))
 
 @doc (@doc RootMeanSquaredError)
-rmse(a::GenericImage, b::GenericImage) = evaluate(RootMeanSquaredError(), a, b)
-
-
-# fix ambiguity
-for ambigious_dist in [SumAbsoluteDifference,
-                       SumSquaredDifference,
-                       MeanAbsoluteError,
-                       MeanSquaredError,
-                       RootMeanSquaredError]
-    @eval begin
-        evaluate(dist::$(ambigious_dist), a::GenericGrayImage{T1}, b::GenericGrayImage{T2}) where  {T1<:PromoteType, T2<:PromoteType} =
-            evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
-
-        function evaluate(dist::$(ambigious_dist), a::AbstractArray{<:Color3{T1}}, b::AbstractArray{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
-            CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
-            CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
-            evaluate(dist, CT1.(a), CT2.(b))
-        end
-    end
-end
+rmse(a::GenericImage, b::GenericImage) = RootMeanSquaredError()(a, b)

@@ -1,46 +1,53 @@
 # patches to metrics.jl of Distances.jl
-#
-# the main reason for these type piracy codes is: in Distances.jl
-# all implementations uses a quite general `AbstractArray` type restriction
-# `evaluate(dist, a::AbstractArray, b::AbstractArray)`
-#
-# Things would become much easier if we can restrict it to
-# `evaluate(dist, a::AbstractArray{<:Number}, b::AbstractArray{<:Number}`
-#
-# See https://github.com/JuliaStats/Distances.jl/pull/128
-#
-# For this reason, we must override the dispatch priorities to make things work,
-# we only overload the definition by inserting `intermediatetype` to promote types,
-# so it's quite safe
-#
-# TODO: reduce memory allocation
-#
-# Johnny Chen <johnnychen94@hotmail.com>
 
+const metrics = (SqEuclidean, Euclidean, Cityblock, Minkowski, Hamming, TotalVariation)
 const UnionMetrics = Distances.UnionMetrics
 
-result_type(dist::UnionMetrics,
-            ::AbstractArray{<:Union{GenericImage{T1}, PixelLike{T1}}},
-            ::AbstractArray{<:Union{GenericImage{T2}, PixelLike{T2}}}) where {T1<:Number, T2<:Number} =
-    typeof(eval_end(dist, eval_op(dist, one(intermediatetype(T1)), one(intermediatetype(T2)))))
-
-evaluate(dist::UnionMetrics, a::AbstractArray{<:NumberLike{T1}}, b::AbstractArray{<:NumberLike{T2}}) where {T1<:PromoteType, T2<:PromoteType} =
-    evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
-
-function evaluate(dist::UnionMetrics, a::AbstractArray{<:Color3{T1}}, b::AbstractArray{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
-    CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
-    CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
-    evaluate(dist, CT1.(a), CT2.(b))
+# Before evaluation, unwrap the AbstractGray colorant and promote storage type
+#
+# (Gray{N0f8}, Gray{N0f8}) -> (Float32, Float32)
+# (Gray{N0f8}, N0f8      ) -> (Float32, Float32)
+# (N0f8      , Gray{N0f8}) -> (Float32, Float32)
+# (N0f8      , N0f8      ) -> (Float32, Float32)
+#
+# For Color3, only promote storage type; basic operation such as `abs2`
+# returns a `Number` for `Color3`(e.g., `RGB`)
+#
+# (RGB{N0f8}, RGB{N0f8}) -> (RGB{Float32}, RGB{Float32} )
+#
+# we don't extend `evaluate` here because it makes the dispatching rules too complicated
+# we only need to extend `eval_op`, since other operations
+# (e.g., `eval_start`, `eval_reduce`, and `eval_end`) will automatically get promoted
+for M in metrics
+    for (Ta, Tb) in ((AbstractGray, AbstractGray),
+                     (AbstractGray, Number),
+                     (Number, AbstractGray),
+                     (PromoteType, PromoteType))
+        @eval function Distances.eval_op(d::$M, a::$Ta, b::$Tb)
+            T1 = eltype(floattype(typeof(a)))
+            T2 = eltype(floattype(typeof(a)))
+            Distances.eval_op(d, T1(a), T2(b))
+        end
+    end
+    @eval function Distances.eval_op(d::$M,
+                                     a::Color3{<:PromoteType},
+                                     b::Color3{<:PromoteType})
+        CT1 = floattype(typeof(a))
+        CT2 = floattype(typeof(b))
+        Distances.eval_op(d, CT1(a), CT2(b))
+    end
 end
 
-# the redundant method on `Array` is used to change the dispatch priority introduced
-# by Distances.jl:
-# `evaluate(d::UnionMetrics, a::Union{Array, ArraySlice}, b::Union{Array, ArraySlice})`
-evaluate(dist::UnionMetrics, a::Array{<:NumberLike{T1}}, b::Array{<:NumberLike{T2}}) where {T1<:PromoteType, T2<:PromoteType} =
-    evaluate(dist, intermediatetype(T1).(a), intermediatetype(T2).(b))
 
-function evaluate(dist::UnionMetrics, a::Array{<:Color3{T1}}, b::Array{<:Color3{T2}}) where {T1<:FixedPoint, T2<:FixedPoint}
-    CT1 = base_colorant_type(eltype(a)){intermediatetype(T1)}
-    CT2 = base_colorant_type(eltype(b)){intermediatetype(T2)}
-    evaluate(dist, CT1.(a), CT2.(b))
+# ambiguities
+for (ATa, ATb) in ((AbstractGray, AbstractGray),
+                   (AbstractGray, Number),
+                   (Number, AbstractGray),
+                   (PromoteType, PromoteType),
+                   (Color3, Color3))
+    @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
+        T1 = eltype(floattype(Ta))
+        T2 = eltype(floattype(Tb))
+        result_type(dist, T1, T2)
+    end
 end

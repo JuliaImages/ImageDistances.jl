@@ -6,6 +6,7 @@ sz_img_3 = (3, 3, 3)
 dist_list = [SqEuclidean(),
             Euclidean(),
             Cityblock(),
+            Minkowski(2),
             Minkowski(2.5),
             Hamming(),
             TotalVariation(),

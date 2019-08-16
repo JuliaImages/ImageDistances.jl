@@ -1,43 +1,22 @@
 module ImageDistances
 
+using MappedArrays
 using Distances
 using Distances:
-    eval_op,
-    eval_end,
     get_common_ncols,
     get_colwise_dims,
     get_pairwise_dims
 import Distances:
     result_type,
-    evaluate,
     colwise,
     colwise!,
     pairwise
 
-# TODO: remove dependency on FixedPointNumbers and Colors
-# https://github.com/JuliaImages/Images.jl/issues/802
-using FixedPointNumbers
-using Colors
-using FixedPointNumbers: floattype
 using ImageCore, ColorVectorSpace
-
-
-# These traits are already defined in ImageCore
-# copied them here for compatibility consideration
-const PixelLike{T<:Number} = Union{T, Colorant{T}}
-const NumberLike{T<:Number} = Union{T, AbstractGray{T}}
-const RealLike{T<:Real} = NumberLike{T}
-const FractionalLike{T<:Union{FixedPoint, AbstractFloat}} = RealLike{T}
-const GrayLike{T<:Union{Bool, FixedPoint, AbstractFloat}} = RealLike{T}
-const GenericImage{T<:Number, N} = AbstractArray{<:PixelLike{T}, N}
-const GenericGrayImage{T<:GrayLike, N} = AbstractArray{<:GrayLike{T}, N}
-const Gray2dImage{T<:GrayLike} = GenericGrayImage{T, 2}
+using ImageCore: GenericImage, GenericGrayImage, Pixel
 
 # FixedPoint and Bool are promoted to Float before evaluate
-const PromoteType = Union{FixedPoint, Bool} # result_type need promotion
-intermediatetype(::Type{T}) where T<:Any = T # make type piracy in metrics.jl safe
-intermediatetype(::Type{T}) where T<:FixedPoint = FixedPointNumbers.floattype(T)
-intermediatetype(::Type{T}) where T<:Bool = Float64
+const PromoteType = Union{FixedPoint,Bool}
 
 include("generic.jl")
 include("metrics_distances.jl")
