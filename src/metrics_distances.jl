@@ -70,3 +70,15 @@ for (ATa, ATb) in ((AbstractGray, AbstractGray),
         end
     end
 end
+
+# WeightedEuclidean defines its own method of colwise!
+function colwise!(r::AbstractVector, dist::WeightedEuclidean,
+                a::AbstractMatrix{<:GenericImage},
+                b::AbstractMatrix{<:GenericImage})
+    (m, n) = get_colwise_dims(r, a, b)
+    m == 1 || throw(DimensionMismatch("The number of columns should be 1."))
+    @inbounds for j = 1:n
+        r[j] = dist(a[1,j], b[1,j]) # TODO: use view
+    end
+    r
+end
