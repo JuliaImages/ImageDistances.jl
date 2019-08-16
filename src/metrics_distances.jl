@@ -1,7 +1,6 @@
-# patches to metrics.jl of Distances.jl
+# patches to Distances.jl
 
-const metrics = (SqEuclidean, Euclidean, Cityblock, Minkowski, Hamming, TotalVariation)
-const UnionMetrics = Distances.UnionMetrics
+const metrics = Distances.metrics
 
 # Before evaluation, unwrap the AbstractGray colorant and promote storage type
 #
@@ -39,7 +38,13 @@ for M in metrics
 end
 
 
-# ambiguities
+### ambiguities
+
+# These metrics in Distances.jl define their own result_type
+const independentmetrics = (CorrDist, Mahalanobis, SqMahalanobis, SpanNormDist)
+const UnionMetrics = Distances.UnionMetrics
+const UnionWeightedMetrics = Distances.UnionWeightedMetrics
+
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
                    (AbstractGray, Number),
                    (Number, AbstractGray),
@@ -49,5 +54,19 @@ for (ATa, ATb) in ((AbstractGray, AbstractGray),
         T1 = eltype(floattype(Ta))
         T2 = eltype(floattype(Tb))
         result_type(dist, T1, T2)
+    end
+
+    @eval function result_type(dist::UnionWeightedMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
+        T1 = eltype(floattype(Ta))
+        T2 = eltype(floattype(Tb))
+        result_type(dist, T1, T2)
+    end
+
+    for M in independentmetrics
+        @eval function result_type(dist::$M, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
+            T1 = eltype(floattype(Ta))
+            T2 = eltype(floattype(Tb))
+            result_type(dist, T1, T2)
+        end
     end
 end
