@@ -21,6 +21,7 @@ struct SumSquaredDifference <: Metric end
 @doc raw"""
     MeanAbsoluteError <: Metric
     mae(x, y)
+    sadn(x, y)
 
 mean absolute error(mae) is calculated by [`sad`](@ref)`(x, y)/length(x)`
 """
@@ -28,7 +29,8 @@ struct MeanAbsoluteError <: Metric end
 
 @doc raw"""
     MeanSquaredError <: Metric
-    mse(x, y) <: Metric
+    mse(x, y)
+    ssdn(x, y)
 
 mean squared error(mse) is calculated by [`ssd`](@ref)`(x, y)/length(x)`
 """
@@ -64,6 +66,8 @@ ssd(a::GenericImage, b::GenericImage) = SumSquaredDifference()(a, b)
 
 @doc (@doc MeanAbsoluteError)
 mae(a::GenericImage, b::GenericImage) = MeanAbsoluteError()(a, b)
+@doc (@doc MeanAbsoluteError)
+const sadn = mae
 
 
 # MeanSquaredError
@@ -72,6 +76,8 @@ mae(a::GenericImage, b::GenericImage) = MeanAbsoluteError()(a, b)
 
 @doc (@doc MeanSquaredError)
 mse(a::GenericImage, b::GenericImage) = MeanSquaredError()(a, b)
+@doc (@doc MeanSquaredError)
+const ssdn = mse
 
 
 # RootMeanSquaredError
