@@ -18,16 +18,9 @@ end
 
 CIEDE2000() = CIEDE2000(DE_2000())
 
-# TODO: remove these when https://github.com/JuliaGraphics/Colors.jl/pull/338 is merged and tagged
-# expand colordiff to number type
-_colordiff(ca,cb; metric) = colordiff(ca, cb, metric)
-_colordiff(ca::Number, cb::AbstractGray; metric) = colordiff(Gray(ca), cb, metric)
-_colordiff(ca::AbstractGray, cb::Number; metric) = colordiff(ca, Gray(cb), metric)
-_colordiff(ca::Number, cb::Number; metric) = colordiff(Gray(ca), Gray(cb), metric)
-
 # colordiff converts image to Lab space, so we don't promote the storage type here
 function (d::CIEDE2000)(imgA::GenericImage, imgB::GenericImage)
-    sum(abs, _colordiff.(imgA, imgB; metric=d.metric))
+    sum(abs, colordiff.(imgA, imgB; metric=d.metric))
 end
 
 # helper function
