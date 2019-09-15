@@ -37,6 +37,22 @@ mean squared error(mse) is calculated by [`ssd`](@ref)`(x, y)/length(x)`
 struct MeanSquaredError <: Metric end
 
 @doc raw"""
+    NCC <: Metric
+    ncc(x, y)
+
+Normalized Cross-correlation(ncc) is calculated by `dot(mean(x),mean(y))/(norm(mean(x))*norm(mean(y)))`
+
+```math
+\frac{<\bar{x}, \bar{y}>}{||\bar{x}||*||\bar{y}||}
+```
+
+!!! info
+
+    NCC isn't a Metric because `ncc(x, x) == 1.0`
+"""
+struct NCC <: PreMetric end
+
+@doc raw"""
     RootMeanSquaredError <: Metric
     rmse(x, y)
 
@@ -86,3 +102,30 @@ const ssdn = mse
 
 @doc (@doc RootMeanSquaredError)
 rmse(a::GenericImage, b::GenericImage) = RootMeanSquaredError()(a, b)
+
+# NCC
+function (::NCC)(a::GenericGrayImage, b::GenericGrayImage)
+    A = channelview(of_eltype(floattype(eltype(a)), a))
+    B = channelview(of_eltype(floattype(eltype(b)), b))
+    return _ncc(A, B)
+end
+
+function (::NCC)(a::AbstractArray{<:Color3}, b::AbstractArray{<:Color3})
+    A = of_eltype(floattype(eltype(a)), a)
+    B = of_eltype(floattype(eltype(b)), b)
+    return _ncc(A, B)
+end
+
+function _ncc(A::GenericImage, B::GenericImage)
+    Am = (A.-mean(A))[:]
+    Bm = (B.-mean(B))[:]
+    return _dot(Am,Bm)/(norm(Am)*norm(Bm))
+end
+
+_dot(a::AbstractArray{<:Number}, b::AbstractArray{<:Number}) =
+    dot(a, b)
+_dot(a::GenericImage, b::GenericImage) =
+    mapreduce(xy->dotc(xy...), +, zip(a, b))
+
+@doc (@doc NCC)
+ncc(a::GenericImage, b::GenericImage) = NCC()(a, b)
