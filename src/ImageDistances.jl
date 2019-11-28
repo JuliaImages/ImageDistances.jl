@@ -77,7 +77,9 @@ export
     sad,
     ssd,
     mae,
+    sadn,
     mse,
+    ssdn,
     rmse,
     ncc
 
