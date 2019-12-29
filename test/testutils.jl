@@ -141,5 +141,5 @@ function test_ndarray(d, sz, T)
     @test_nowarn d(x, y)
 
     T <: AbstractGray || return nothing
-    @test d(x, y) == d(channelview(x), channelview(y))
+    @test d(x, y) ≈ d(channelview(x), channelview(y))
 end
