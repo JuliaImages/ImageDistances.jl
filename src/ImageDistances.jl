@@ -1,7 +1,7 @@
 module ImageDistances
 
 using MappedArrays
-using Distances
+using Distances, LinearAlgebra, Statistics
 using Distances:
     get_common_ncols,
     get_colwise_dims,
@@ -68,6 +68,7 @@ export
     MeanAbsoluteError,
     MeanSquaredError,
     RootMeanSquaredError,
+    NCC,
 
     # helper functions
     hausdorff,
@@ -76,8 +77,11 @@ export
     sad,
     ssd,
     mae,
+    sadn,
     mse,
-    rmse
+    ssdn,
+    rmse,
+    ncc
 
 """
 `ImageDistances` is an image-related distance package built based on `Distances`.
