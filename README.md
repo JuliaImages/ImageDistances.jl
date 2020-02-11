@@ -1,7 +1,8 @@
 # ImageDistances.jl
 
-[![Build Status](https://travis-ci.org/JuliaImages/ImageDistances.jl.svg?branch=master)](https://travis-ci.org/JuliaImages/ImageDistances.jl)
-[![codecov.io](http://codecov.io/github/JuliaImages/ImageDistances.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaImages/ImageDistances.jl?branch=master)
+[![][travis-img]][travis-url]
+[![][pkgeval-img]][pkgeval-url]
+[![][codecov-img]][codecov-url]
 
 `ImageDistances.jl` aims to:
 
@@ -104,9 +105,12 @@ pairwise(d, imgsA)
 | `Hausdorff` and `ModifiedHausdorff` | `hausdorff(imgA,imgB)` and `modified_hausdorff(imgA,imgB)` | Dubuisson, M-P et al. 1994. A Modified Hausdorff Distance for Object-Matching. |
 | `CIEDE2000` | `ciede2000(imgA,imgB)` and `ciede2000(imgA,imgB; metric=DE_2000())` | Sharma, G., Wu, W., and Dalal, E. N., 2005. The CIEDE2000 color‐difference formula. |
 
-## Contributing
 
-Contributions are very welcome, as are feature requests and suggestions.
+<!-- URLS -->
 
-Please [open an issue](https://github.com/juliohm/ImageDistances.jl/issues) if you encounter
-any problems.
+[pkgeval-img]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/I/ImageDistances.svg
+[pkgeval-url]: https://juliaci.github.io/NanosoldierReports/pkgeval_badges/report.html
+[travis-img]: https://travis-ci.org/JuliaImages/ImageDistances.jl.svg?branch=master
+[travis-url]: https://travis-ci.org/JuliaImages/ImageDistances.jl
+[codecov-img]: https://codecov.io/github/JuliaImages/ImageDistances.jl/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/github/JuliaImages/ImageDistances.jl?branch=master
