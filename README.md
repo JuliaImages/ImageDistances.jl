@@ -95,7 +95,7 @@ pairwise(d, imgsA)
 |  SumSquaredDifference   |  `ssd(x, y)`               | `sum((x - y).^2)`                 |
 |  MeanAbsoluteError      |  `mae(x, y)`, `sadn(x, y)` | `sum(abs(x - y))/len(x)`          |
 |  MeanSquaredError       |  `mse(x, y)`, `ssdn(x, y)` | `sum((x - y).^2)/len(x)`          |
-|  RootMeanSquaredError   |  `rmse(x, y)`              | `sqrt(sum((x - y) .^ 2))`         |
+|  RootMeanSquaredError   |  `rmse(x, y)`              | `sqrt(sum((x - y) .^ 2)/len(x))`  |
 |  NCC                    |  `ncc(x, y)`               | `dot(x,y)/(norm(x)*norm(y))`      |
 
 ### Image-specific Distances
