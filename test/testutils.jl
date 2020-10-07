@@ -97,7 +97,7 @@ function test_numeric(dist, a, b, T; filename=nothing)
     @testset "numeric" begin
         @testset "$T" begin
             # @test_reference "$(filename)_$(eltype(a))_$(eltype(b)).txt" dist(a, b)
-            @test_reference "$(filename).txt" Float64(dist(a, b)) by = (x, y) -> abs(x - y) < 1e-7
+            @test_reference "$(filename).txt" Float64(dist(a, b))
         end
     end
 end

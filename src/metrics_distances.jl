@@ -1,6 +1,7 @@
 # patches to metrics.jl of Distances.jl
 
 const metrics = (SqEuclidean, Euclidean, Cityblock, Minkowski, Hamming, TotalVariation)
+const UnionMetrics = Distances.UnionMetrics
 
 # Before evaluation, unwrap the AbstractGray colorant and promote storage type
 #
@@ -39,28 +40,11 @@ end
 
 
 # ambiguities
-result_type(dist::UnionMetrics,
-            a::AbstractArray{<:AbstractArray},
-            b::AbstractArray{<:AbstractArray}) =
-    result_type(dist, first(a), first(b))
-
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
                    (AbstractGray, Number),
                    (Number, AbstractGray),
                    (PromoteType, PromoteType),
                    (Color3, Color3))
-    @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}, ::Nothing) where {Ta <: $ATa,Tb <: $ATb}
-        T1 = eltype(floattype(Ta))
-        T2 = eltype(floattype(Tb))
-        result_type(dist, T1, T2)
-    end
-    @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}, p) where {Ta <: $ATa,Tb <: $ATb}
-        T1 = eltype(floattype(Ta))
-        T2 = eltype(floattype(Tb))
-        result_type(dist, T1, T2, p)
-    end
-
-    # compat for Distances 0.8
     @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
         T1 = eltype(floattype(Ta))
         T2 = eltype(floattype(Tb))

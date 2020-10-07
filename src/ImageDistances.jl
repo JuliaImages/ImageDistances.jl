@@ -17,7 +17,6 @@ using ImageCore: GenericImage, GenericGrayImage, Pixel
 
 # FixedPoint and Bool are promoted to Float before evaluate
 const PromoteType = Union{FixedPoint,Bool}
-const UnionMetrics = Distances.UnionMetrics
 
 include("generic.jl")
 include("metrics_distances.jl")
