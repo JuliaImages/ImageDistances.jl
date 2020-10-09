@@ -1,6 +1,5 @@
 module ImageDistances
 
-using MappedArrays
 using Distances, LinearAlgebra, Statistics
 using Distances:
     get_common_ncols,
@@ -13,6 +12,7 @@ import Distances:
     pairwise
 
 using ImageCore, ColorVectorSpace
+using ImageCore.MappedArrays
 using ImageCore: GenericImage, GenericGrayImage, Pixel
 
 # FixedPoint and Bool are promoted to Float before evaluate
