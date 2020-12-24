@@ -12,7 +12,7 @@
 
 ## Usage
 
-`ImageDistances.jl` is shipped together with `Images.jl`, but you can still use it as a standlone package.
+`ImageDistances.jl` is shipped together with `Images.jl`, but you can still use it as a standalone package.
 
 ```julia
 # both line includes this package
