@@ -14,6 +14,9 @@ import Distances:
 using ImageCore, ColorVectorSpace
 using ImageCore.MappedArrays
 using ImageCore: GenericImage, GenericGrayImage, Pixel
+using ImageMorphology.FeatureTransform:
+    feature_transform,
+    distance_transform
 
 # FixedPoint and Bool are promoted to Float before evaluate
 const PromoteType = Union{FixedPoint,Bool}
