@@ -101,8 +101,8 @@ function evaluate_hausdorff(d::GenericHausdorff,
     # We only care about the distances from imgA to imgB and vice
     # versa, so we'll pull those out by using those images as logical
     # masks into the distance arrays.
-    dAB = _reduce(d.inner_op, dtB[imgA])
-    dBA = _reduce(d.inner_op, dtA[imgB])
+    dAB = _reduce(d.inner_op, view(dtB, imgA))
+    dBA = _reduce(d.inner_op, view(dtA, imgB))
     _reduce(d.outer_op, (dAB, dBA))
 end
 function evaluate_hausdorff(d::GenericHausdorff,
