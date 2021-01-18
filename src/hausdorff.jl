@@ -84,7 +84,14 @@ ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to its distance transform
 hausdorff_transform(img::AbstractArray{Bool}) = distance_transform(feature_transform(img))
-hausdorff_transform(img::GenericGrayImage) = hausdorff_transform(of_eltype(Bool, img))
+function hausdorff_transform(img::GenericGrayImage)
+  try
+      hausdorff_transform(of_eltype(Bool, img))
+  catch e
+      e isa InexactError && throw(ArgumentError("Binary image is needed."))
+      rethrow(e)
+  end
+end
 
 function evaluate_hausdorff(d::GenericHausdorff,
                             imgA::AbstractArray{Bool},
