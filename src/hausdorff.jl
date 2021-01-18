@@ -1,11 +1,4 @@
 """
-    BoolImage
-
-A type representing a binary image.
-"""
-const BoolImage = AbstractArray{Bool}
-
-"""
     ReductionOperation
 
 A reduction operation on a set of values (e.g. maximum).
@@ -90,20 +83,13 @@ const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
 ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to its distance transform
-const hausdorff_transform(img::BoolImage) = img |> feature_transform |> distance_transform
+const hausdorff_transform(img::AbstractArray{Bool}) = img |> feature_transform |> distance_transform
 
-function hausdorff_transform(img::GenericGrayImage)
-    try
-        return hausdorff_transform(of_eltype(Bool, img))
-    catch e
-        e isa InexactError && throw(ArgumentError("Binary image is needed."))
-        rethrow(e)
-    end
-end
+const hausdorff_transform(img::GenericGrayImage) = hausdorff_transform(of_eltype(Bool, img))
 
 function evaluate_hausdorff(d::GenericHausdorff,
-                            imgA::BoolImage,
-                            imgB::BoolImage,
+                            imgA::AbstractArray{Bool},
+                            imgB::AbstractArray{Bool},
                             dtA::AbstractArray,
                             dtB::AbstractArray)
     # trivial cases
@@ -125,11 +111,7 @@ function evaluate_hausdorff(d::GenericHausdorff,
                             dtA::AbstractArray,
                             dtB::AbstractArray)
     try
-        return evaluate_hausdorff(  d,
-                                    of_eltype(Bool, imgA),
-                                    of_eltype(Bool, imgB),
-                                    dtA,
-                                    dtB)
+        evaluate_hausdorff(d, of_eltype(Bool, imgA), of_eltype(Bool, imgB), dtA, dtB)
     catch e
         e isa InexactError && throw(ArgumentError("Binary image is needed."))
         rethrow(e)
@@ -152,8 +134,8 @@ modified_hausdorff(imgA::GenericGrayImage, imgB::GenericGrayImage)  =
 function pairwise(d::GenericHausdorff,
                   imgsA::AbstractVector{<:GenericGrayImage},
                   imgsB::AbstractVector{<:GenericGrayImage})
-    dtsA = [hausdorff_transform(imgA) for imgA in imgsA]
-    dtsB = [hausdorff_transform(imgB) for imgB in imgsB]
+    dtsA = hausdorff_transform.(imgsA)
+    dtsB = hausdorff_transform.(imgsB)
 
     m, n = length(imgsA), length(imgsB)
     D = zeros(m, n)
@@ -177,7 +159,7 @@ function pairwise(d::GenericHausdorff,
 end
 
 function pairwise(d::GenericHausdorff, imgs::AbstractVector{<:GenericGrayImage})
-    dts = [hausdorff_transform(img) for img in imgs]
+    dts = hausdorff_transform.(imgs)
 
     n = length(imgs)
     D = zeros(n, n)
