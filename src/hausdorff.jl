@@ -89,24 +89,23 @@ See also: [`hausdorff`](@ref)
 const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
 ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
-# convert binary image to a point set format
-function img2dt(img::BoolImage)
-    distance_transform(feature_transform(img))
-end
-function img2dt(img::GenericGrayImage)
+# convert binary image to its distance transform
+const hausdorff_transform(img::BoolImage) = img |> feature_transform |> distance_transform
+
+function hausdorff_transform(img::GenericGrayImage)
     try
-        return img2dt(of_eltype(Bool, img))
+        return hausdorff_transform(of_eltype(Bool, img))
     catch e
         e isa InexactError && throw(ArgumentError("Binary image is needed."))
         rethrow(e)
     end
 end
 
-function evaluate_dt(   d::GenericHausdorff,
-                        imgA::BoolImage,
-                        imgB::BoolImage,
-                        dtA::AbstractArray,
-                        dtB::AbstractArray)
+function evaluate_hausdorff(d::GenericHausdorff,
+                            imgA::BoolImage,
+                            imgB::BoolImage,
+                            dtA::AbstractArray,
+                            dtB::AbstractArray)
     # trivial cases
     imgA == imgB && return 0.
     (isempty(imgA) || isempty(imgB)) && return Inf
@@ -120,17 +119,17 @@ function evaluate_dt(   d::GenericHausdorff,
     dBA = _reduce(d.inner_op, dtA[imgB])
     _reduce(d.outer_op, (dAB, dBA))
 end
-function evaluate_dt(   d::GenericHausdorff,
-                        imgA::GenericGrayImage,
-                        imgB::GenericGrayImage,
-                        dtA::AbstractArray,
-                        dtB::AbstractArray)
+function evaluate_hausdorff(d::GenericHausdorff,
+                            imgA::GenericGrayImage,
+                            imgB::GenericGrayImage,
+                            dtA::AbstractArray,
+                            dtB::AbstractArray)
     try
-        return evaluate_dt( d,
-                            of_eltype(Bool, imgA),
-                            of_eltype(Bool, imgB),
-                            dtA,
-                            dtB)
+        return evaluate_hausdorff(  d,
+                                    of_eltype(Bool, imgA),
+                                    of_eltype(Bool, imgB),
+                                    dtA,
+                                    dtB)
     catch e
         e isa InexactError && throw(ArgumentError("Binary image is needed."))
         rethrow(e)
@@ -138,7 +137,7 @@ function evaluate_dt(   d::GenericHausdorff,
 end
 
 (d::GenericHausdorff)(imgA::GenericGrayImage, imgB::GenericGrayImage) =
-    evaluate_dt(d, imgA, imgB, img2dt(imgA), img2dt(imgB))
+    evaluate_hausdorff(d, imgA, imgB, hausdorff_transform(imgA), hausdorff_transform(imgB))
 
 # helper functions
 @doc (@doc Hausdorff)
@@ -153,8 +152,8 @@ modified_hausdorff(imgA::GenericGrayImage, imgB::GenericGrayImage)  =
 function pairwise(d::GenericHausdorff,
                   imgsA::AbstractVector{<:GenericGrayImage},
                   imgsB::AbstractVector{<:GenericGrayImage})
-    dtsA = [img2dt(imgA) for imgA in imgsA]
-    dtsB = [img2dt(imgB) for imgB in imgsB]
+    dtsA = [hausdorff_transform(imgA) for imgA in imgsA]
+    dtsB = [hausdorff_transform(imgB) for imgB in imgsB]
 
     m, n = length(imgsA), length(imgsB)
     D = zeros(m, n)
@@ -165,12 +164,12 @@ function pairwise(d::GenericHausdorff,
       for i=min(m, j+1):m
         imgA = imgsA[i]
         dtA = dtsA[i]
-        D[i,j] = evaluate_dt(d, imgA, imgB, dtA, dtB)
+        D[i,j] = evaluate_hausdorff(d, imgA, imgB, dtA, dtB)
       end
       for i=1:min(m, j+1)
         imgA = imgsA[i]
         dtA = dtsA[i]
-        D[i,j] = evaluate_dt(d, imgA, imgB, dtA, dtB)
+        D[i,j] = evaluate_hausdorff(d, imgA, imgB, dtA, dtB)
       end
     end
 
@@ -178,7 +177,7 @@ function pairwise(d::GenericHausdorff,
 end
 
 function pairwise(d::GenericHausdorff, imgs::AbstractVector{<:GenericGrayImage})
-    dts = [img2dt(img) for img in imgs]
+    dts = [hausdorff_transform(img) for img in imgs]
 
     n = length(imgs)
     D = zeros(n, n)
@@ -188,7 +187,7 @@ function pairwise(d::GenericHausdorff, imgs::AbstractVector{<:GenericGrayImage})
       for i=j+1:n
         imgA = imgs[i]
         dtA = dts[i]
-        D[i,j] = evaluate_dt(d, imgA, imgB, dtA, dtB)
+        D[i,j] = evaluate_hausdorff(d, imgA, imgB, dtA, dtB)
       end
       # nothing to be done to the diagonal (always zero)
       for i=1:j-1
