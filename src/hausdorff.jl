@@ -83,9 +83,8 @@ const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
 ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
 
 # convert binary image to its distance transform
-const hausdorff_transform(img::AbstractArray{Bool}) = img |> feature_transform |> distance_transform
-
-const hausdorff_transform(img::GenericGrayImage) = hausdorff_transform(of_eltype(Bool, img))
+hausdorff_transform(img::AbstractArray{Bool}) = distance_transform(feature_transform(img))
+hausdorff_transform(img::GenericGrayImage) = hausdorff_transform(of_eltype(Bool, img))
 
 function evaluate_hausdorff(d::GenericHausdorff,
                             imgA::AbstractArray{Bool},
