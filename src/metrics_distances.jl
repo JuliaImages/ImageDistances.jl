@@ -51,3 +51,5 @@ for (ATa, ATb) in ((AbstractGray, AbstractGray),
         result_type(dist, T1, T2)
     end
 end
+result_type(::Hamming, ::Type{Bool}, ::Type{Bool}) = Int
+result_type(::Hamming, ::Type{Normed{UInt8,8}}, ::Type{Normed{UInt8,8}}) = Float32

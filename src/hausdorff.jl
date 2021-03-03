@@ -9,7 +9,13 @@ struct MaxReduction  <: ReductionOperation end
 struct MeanReduction <: ReductionOperation end
 
 _reduce(op::MaxReduction, x)  = maximum(x)
-_reduce(op::MeanReduction, x) = sum(x) / length(x)
+function _reduce(op::MeanReduction, x)
+    if length(x) == 0
+        return zero(eltype(x))
+    else
+        return sum(x) / length(x)
+    end
+end
 
 """
     GenericHausdorff(inner_op, outer_op)
@@ -101,7 +107,7 @@ function evaluate_hausdorff(d::GenericHausdorff,
     # trivial cases
     T = result_type(d, dtA, dtB)
     imgA == imgB && return zero(T)
-    (isempty(imgA) || isempty(imgB)) && return convert(T, Inf)
+    (!any(imgA) || !any(imgB)) && return convert(T, Inf)
 
     # dtA and dtB contain the distance from each pixel
     # to the nearest active pixel in imgA and imgB, respectively.

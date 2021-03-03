@@ -14,7 +14,7 @@ end
 function colwise!(r::AbstractVector, dist::PreMetric,
                   a::AbstractMatrix{<:GenericImage},
                   b::AbstractMatrix{<:GenericImage})
-    (m, n) = get_colwise_dims(r, a, b)
+    (m, n) = get_colwise_dims(size(a, 1), r, a, b)
     m == 1 || throw(DimensionMismatch("The number of columns should be 1."))
     @inbounds for j = 1:n
         r[j] = dist(a[1,j], b[1,j]) # TODO: use view
