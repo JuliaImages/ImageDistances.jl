@@ -1,7 +1,6 @@
-# patches to metrics.jl of Distances.jl
+# patches to Distances.jl
 
 const metrics = (SqEuclidean, Euclidean, Cityblock, Minkowski, Hamming, TotalVariation)
-const UnionMetrics = Distances.UnionMetrics
 
 # Before evaluation, unwrap the AbstractGray colorant and promote storage type
 #
@@ -39,15 +38,33 @@ for M in metrics
 end
 
 
-# ambiguities
+### ambiguities
+
+# These metrics in Distances.jl define their own result_type
+const independentmetrics = (CorrDist, Mahalanobis, SqMahalanobis, SpanNormDist, Distances.UnionMetrics, Distances.UnionWeightedMetrics)
+
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
                    (AbstractGray, Number),
                    (Number, AbstractGray),
                    (PromoteType, PromoteType),
                    (Color3, Color3))
-    @eval function result_type(dist::UnionMetrics, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
-        T1 = eltype(floattype(Ta))
-        T2 = eltype(floattype(Tb))
-        result_type(dist, T1, T2)
+    for M in independentmetrics
+        @eval function result_type(dist::$M, ::Type{Ta}, ::Type{Tb}) where {Ta <: $ATa,Tb <: $ATb}
+            T1 = eltype(floattype(Ta))
+            T2 = eltype(floattype(Tb))
+            result_type(dist, T1, T2)
+        end
     end
+end
+
+# WeightedEuclidean defines its own method of colwise!
+function colwise!(r::AbstractVector, dist::WeightedEuclidean,
+                a::AbstractMatrix{<:GenericImage},
+                b::AbstractMatrix{<:GenericImage})
+    (m, n) = get_colwise_dims(r, a, b)
+    m == 1 || throw(DimensionMismatch("The number of columns should be 1."))
+    @inbounds for j = 1:n
+        r[j] = dist(a[1,j], b[1,j]) # TODO: use view
+    end
+    r
 end
