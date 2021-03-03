@@ -9,13 +9,7 @@ struct MaxReduction  <: ReductionOperation end
 struct MeanReduction <: ReductionOperation end
 
 _reduce(op::MaxReduction, x)  = maximum(x)
-function _reduce(op::MeanReduction, x)
-    if length(x) == 0
-        return zero(eltype(x))
-    else
-        return sum(x) / length(x)
-    end
-end
+_reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
     GenericHausdorff(inner_op, outer_op)
