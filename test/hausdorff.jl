@@ -13,6 +13,7 @@ type_list = generate_test_types([Bool], [Gray])
     @info "test: GenericHausdorff"
 
     dist = Hausdorff()
+    A_zero = zeros(Bool, 3, 3)
     @testset "Hausdorff" begin
         for T in type_list
             @testset "$T" begin
@@ -26,6 +27,9 @@ type_list = generate_test_types([Bool], [Gray])
                 test_numeric(dist, a, b, T; filename="references/Hausdorff_2d_Gray")
             end
         end
+        @test dist(A_zero, A_zero) == 0.0
+        @test dist(A_zero, A) == Inf
+        @test dist(A, A_zero) == Inf
     end
     test_cross_type(dist, A, B, type_list)
 

@@ -101,7 +101,7 @@ function evaluate_hausdorff(d::GenericHausdorff,
     # trivial cases
     T = result_type(d, dtA, dtB)
     imgA == imgB && return zero(T)
-    (isempty(imgA) || isempty(imgB)) && return convert(T, Inf)
+    (!any(imgA) || !any(imgB)) && return convert(T, Inf)
 
     # dtA and dtB contain the distance from each pixel
     # to the nearest active pixel in imgA and imgB, respectively.

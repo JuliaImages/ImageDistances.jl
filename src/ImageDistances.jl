@@ -27,6 +27,10 @@ include("metrics.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
 
+for MT in [GenericHausdorff, SumAbsoluteDifference, SumSquaredDifference, NCC, RootMeanSquaredError, MeanAbsoluteError, MeanSquaredError, CIEDE2000]
+    @eval Distances.result_type(::$MT, a::Type{T}, ::Type{U}) where {T<:AbstractFloat,U<:AbstractFloat} = promote_type(T, U)
+end
+
 
 # reexport symbols from Distances.jl
 # delibrately not use Reexport
