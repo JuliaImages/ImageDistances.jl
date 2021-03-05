@@ -12,10 +12,11 @@ _reduce(op::MaxReduction, x)  = maximum(x)
 _reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
-    GenericHausdorff(inner_op, outer_op)
+    GenericHausdorff(inner_op, outer_op, transform_weights = nothing)
 
 The generalized Hausdorff distance with inner reduction `inner_op`
-and outer reduction `outer_op`.
+and outer reduction `outer_op`. `transform_weights` are used in `hausdorff_transform` for
+axis weighting.
 
 ## References
 
