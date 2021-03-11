@@ -50,9 +50,9 @@ type_list = generate_test_types([Bool], [Gray])
     end
     test_cross_type(dist, A, B, type_list)
 
-    dist_2 = GenericHausdorff(ImageDistances.MaxReduction(), ImageDistances.MaxReduction(), (1.0, 1.5))
-    dist_3 = GenericHausdorff(ImageDistances.MaxReduction(), ImageDistances.MaxReduction(), (1.0, 1.5, 2.0))
-    @testset "GenericHausdorff with weights" begin
+    dist_2 = AxisWeightedHausdorff((1.0, 1.5))
+    dist_3 = AxisWeightedHausdorff((1.0, 1.5, 2.0))
+    @testset "AxisWeightedHausdorff" begin
         Aw = [false false false
             false true false
             false false true]

@@ -84,6 +84,15 @@ See also: [`hausdorff`](@ref)
 const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction, Nothing}
 ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction(), nothing)
 
+"""
+    AxisWeightedHausdorff(weights::Tuple)
+
+Hausdorff distance (see `Hausdorff` for general documentation) where axes are weighted
+using specified weights. Distances (expressed as differences between indices in
+successive axes) are multiplied by given weights.
+"""
+AxisWeightedHausdorff(weights::Tuple) = GenericHausdorff(MaxReduction(), MaxReduction(), weights)
+
 # convert binary image to its distance transform
 function hausdorff_transform(d::GenericHausdorff, img::AbstractArray{Bool})
     return distance_transform(feature_transform(img, d.weights), d.weights)
