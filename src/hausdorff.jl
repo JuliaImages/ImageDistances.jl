@@ -12,11 +12,11 @@ _reduce(op::MaxReduction, x)  = maximum(x)
 _reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
-    GenericHausdorff(inner_op, outer_op, transform_weights = nothing)
+    GenericHausdorff(inner_op, outer_op, weights = nothing)
 
 The generalized Hausdorff distance with inner reduction `inner_op`
-and outer reduction `outer_op`. `transform_weights` are used in `hausdorff_transform` for
-axis weighting.
+and outer reduction `outer_op`. Optionally, `weights` can be used for each axis
+before distance transformations are applied.
 
 ## References
 
@@ -27,7 +27,7 @@ See also: [`Hausdorff`](@ref), [`ModifiedHausdorff`](@ref)
 struct GenericHausdorff{I<:ReductionOperation, O<:ReductionOperation, W<:Union{Nothing,Tuple}} <: Metric
     inner_op::I
     outer_op::O
-    transform_weights::W
+    weights::W
 end
 
 @doc raw"""
@@ -86,7 +86,7 @@ ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction(), nothing
 
 # convert binary image to its distance transform
 function hausdorff_transform(d::GenericHausdorff, img::AbstractArray{Bool})
-    return distance_transform(feature_transform(img, d.transform_weights), d.transform_weights)
+    return distance_transform(feature_transform(img, d.weights), d.weights)
 end
 function hausdorff_transform(d::GenericHausdorff, img::GenericGrayImage)
   try
