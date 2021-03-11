@@ -69,6 +69,7 @@ export
     GenericHausdorff,
     Hausdorff,
     ModifiedHausdorff,
+    AxisWeightedHausdorff,
     CIEDE2000,
     SumAbsoluteDifference,
     SumSquaredDifference,

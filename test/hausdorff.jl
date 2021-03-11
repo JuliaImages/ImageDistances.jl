@@ -49,4 +49,30 @@ type_list = generate_test_types([Bool], [Gray])
         end
     end
     test_cross_type(dist, A, B, type_list)
+
+    dist_2 = AxisWeightedHausdorff((1.0, 1.5))
+    dist_3 = AxisWeightedHausdorff((1.0, 1.5, 2.0))
+    @testset "AxisWeightedHausdorff" begin
+        Aw = [false false false
+            false true false
+            false false true]
+        Bw = [false true false
+            false true false
+            false false true]
+        Cw = [false false false
+            true true false
+            false false true]
+        @test dist_2(Aw, Bw) == 1.0
+        @test dist_2(Aw, Cw) == 1.5
+        
+        for T in type_list
+            @testset "$T" begin
+                test_SemiMetric(dist_2, sz_img, T)
+                test_ndarray(dist_3, sz_img_3, T)
+                test_colwise(dist_2, n, sz_img, T)
+                test_pairwise(dist_2, m, n, sz_img, T)
+            end
+        end
+    end
+    test_cross_type(dist_2, A, B, type_list)
 end

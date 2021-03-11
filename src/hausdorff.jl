@@ -12,10 +12,11 @@ _reduce(op::MaxReduction, x)  = maximum(x)
 _reduce(op::MeanReduction, x) = sum(x) / length(x)
 
 """
-    GenericHausdorff(inner_op, outer_op)
+    GenericHausdorff(inner_op, outer_op, weights = nothing)
 
 The generalized Hausdorff distance with inner reduction `inner_op`
-and outer reduction `outer_op`.
+and outer reduction `outer_op`. Optionally, `weights` can be used for each axis
+before distance transformations are applied.
 
 ## References
 
@@ -23,9 +24,10 @@ Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Mat
 
 See also: [`Hausdorff`](@ref), [`ModifiedHausdorff`](@ref)
 """
-struct GenericHausdorff{I<:ReductionOperation, O<:ReductionOperation} <: Metric
+struct GenericHausdorff{I<:ReductionOperation, O<:ReductionOperation, W<:Union{Nothing,Tuple}} <: Metric
     inner_op::I
     outer_op::O
+    weights::W
 end
 
 @doc raw"""
@@ -52,8 +54,8 @@ Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Mat
 
 See also: [`modified_hausdorff`](@ref)
 """
-const Hausdorff = GenericHausdorff{MaxReduction, MaxReduction}
-Hausdorff() = Hausdorff(MaxReduction(), MaxReduction())
+const Hausdorff = GenericHausdorff{MaxReduction, MaxReduction, Nothing}
+Hausdorff() = Hausdorff(MaxReduction(), MaxReduction(), nothing)
 
 @doc raw"""
     ModifiedHausdorff <: GenericHausdorff
@@ -79,14 +81,25 @@ Dubuisson, M-P; Jain, A. K., 1994. *A Modified Hausdorff Distance for Object-Mat
 
 See also: [`hausdorff`](@ref)
 """
-const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction}
-ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction())
+const ModifiedHausdorff = GenericHausdorff{MeanReduction, MaxReduction, Nothing}
+ModifiedHausdorff() = ModifiedHausdorff(MeanReduction(), MaxReduction(), nothing)
+
+"""
+    AxisWeightedHausdorff(weights::Tuple)
+
+Hausdorff distance (see `Hausdorff` for general documentation) where axes are weighted
+using specified weights. Distances (expressed as differences between indices in
+successive axes) are multiplied by given weights.
+"""
+AxisWeightedHausdorff(weights::Tuple) = GenericHausdorff(MaxReduction(), MaxReduction(), weights)
 
 # convert binary image to its distance transform
-hausdorff_transform(img::AbstractArray{Bool}) = distance_transform(feature_transform(img))
-function hausdorff_transform(img::GenericGrayImage)
+function hausdorff_transform(d::GenericHausdorff, img::AbstractArray{Bool})
+    return distance_transform(feature_transform(img, d.weights), d.weights)
+end
+function hausdorff_transform(d::GenericHausdorff, img::GenericGrayImage)
   try
-      hausdorff_transform(of_eltype(Bool, img))
+      hausdorff_transform(d, of_eltype(Bool, img))
   catch e
       e isa InexactError && throw(ArgumentError("Binary image is needed."))
       rethrow(e)
@@ -126,7 +139,7 @@ function evaluate_hausdorff(d::GenericHausdorff,
 end
 
 (d::GenericHausdorff)(imgA::GenericGrayImage, imgB::GenericGrayImage) =
-    evaluate_hausdorff(d, imgA, imgB, hausdorff_transform(imgA), hausdorff_transform(imgB))
+    evaluate_hausdorff(d, imgA, imgB, hausdorff_transform(d, imgA), hausdorff_transform(d, imgB))
 
 # helper functions
 @doc (@doc Hausdorff)
@@ -141,8 +154,8 @@ modified_hausdorff(imgA::GenericGrayImage, imgB::GenericGrayImage)  =
 function pairwise(d::GenericHausdorff,
                   imgsA::AbstractVector{<:GenericGrayImage},
                   imgsB::AbstractVector{<:GenericGrayImage})
-    dtsA = hausdorff_transform.(imgsA)
-    dtsB = hausdorff_transform.(imgsB)
+    dtsA = hausdorff_transform.(Ref(d), imgsA)
+    dtsB = hausdorff_transform.(Ref(d), imgsB)
 
     m, n = length(imgsA), length(imgsB)
     D = zeros(m, n)
@@ -166,7 +179,7 @@ function pairwise(d::GenericHausdorff,
 end
 
 function pairwise(d::GenericHausdorff, imgs::AbstractVector{<:GenericGrayImage})
-    dts = hausdorff_transform.(imgs)
+    dts = hausdorff_transform.(Ref(d), imgs)
 
     n = length(imgs)
     D = zeros(n, n)
