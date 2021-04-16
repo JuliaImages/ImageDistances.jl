@@ -117,8 +117,8 @@ function (::NCC)(a::AbstractArray{<:Color3}, b::AbstractArray{<:Color3})
 end
 
 function _ncc(A::GenericImage, B::GenericImage)
-    Am = (A.-mean(A))[:]
-    Bm = (B.-mean(B))[:]
+    Am = @view (A.-mean(A))[:]
+    Bm = @view (B.-mean(B))[:]
     # _norm is a patch for ColorVectorSpace 0.9
     _dot(Am, Bm)/(_norm(Am)*_norm(Bm))
 end
