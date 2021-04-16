@@ -1,3 +1,7 @@
+# helper function to compare NaN
+nearlysame(x, y) = x ≈ y || (isnan(x) & isnan(y))
+nearlysame(A::AbstractArray, B::AbstractArray) = all(map(nearlysame, A, B))
+
 # AbstractGray and Color3 tests should be generated seperately
 function generate_test_types(number_types::AbstractArray{<:DataType}, color_types::AbstractArray{<:UnionAll})
     test_types = map(Iterators.product(number_types, color_types)) do T
@@ -43,8 +47,8 @@ function test_colwise(dist, n, sz, T)
             r1[j] = dist(vec_imgsA[j], vec_imgsB[j])
             r2[j] = dist(mat_imgsA[1,j], mat_imgsB[1,j])
         end
-        @test all(colwise(dist, vec_imgsA, vec_imgsB) .≈ r1)
-        @test all(colwise(dist, mat_imgsA, mat_imgsB) .≈ r2)
+        @test nearlysame(colwise(dist, vec_imgsA, vec_imgsB), r1)
+        @test nearlysame(colwise(dist, mat_imgsA, mat_imgsB), r2)
         @test_throws DimensionMismatch colwise(dist, mat_imgsA_wrong, mat_imgsB_wrong)
     end
 end
@@ -70,9 +74,9 @@ function test_pairwise(dist, nA, nB, sz, T)
         for j = 1:nA, i = 1:nA
             rAA[i, j] = dist(vec_imgsA[i], vec_imgsA[j])
         end
-        @test pairwise(dist, vec_imgsA, vec_imgsB) ≈ rAB
-        @test pairwise(dist, vec_imgsA, vec_imgsA) ≈ rAA
-        @test pairwise(dist, vec_imgsA) ≈ rAA
+        @test nearlysame(pairwise(dist, vec_imgsA, vec_imgsB), rAB)
+        @test nearlysame(pairwise(dist, vec_imgsA, vec_imgsA), rAA)
+        @test nearlysame(pairwise(dist, vec_imgsA), rAA)
     end
 end
 
@@ -96,8 +100,7 @@ function test_numeric(dist, a, b, T; filename=nothing)
     end
     @testset "numeric" begin
         @testset "$T" begin
-            # @test_reference "$(filename)_$(eltype(a))_$(eltype(b)).txt" dist(a, b)
-            @test_reference "$(filename).txt" Float64(dist(a, b))
+            @test_reference "$(filename).txt" Float64(dist(a, b)) by=(x,y)->isapprox(x,y; atol=1e-8)
         end
     end
 end

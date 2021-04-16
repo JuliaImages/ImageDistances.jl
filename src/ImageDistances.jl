@@ -26,6 +26,7 @@ include("metrics_distances.jl")
 include("metrics.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
+include("compat.jl")
 
 for MT in [GenericHausdorff, SumAbsoluteDifference, SumSquaredDifference, NCC, RootMeanSquaredError, MeanAbsoluteError, MeanSquaredError, CIEDE2000]
     @eval Distances.result_type(::$MT, a::Type{T}, ::Type{U}) where {T<:AbstractFloat,U<:AbstractFloat} = promote_type(T, U)

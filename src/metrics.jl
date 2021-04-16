@@ -119,13 +119,12 @@ end
 function _ncc(A::GenericImage, B::GenericImage)
     Am = (A.-mean(A))[:]
     Bm = (B.-mean(B))[:]
-    return _dot(Am,Bm)/(norm(Am)*norm(Bm))
+    # _norm is a patch for ColorVectorSpace 0.9
+    _dot(Am, Bm)/(_norm(Am)*_norm(Bm))
 end
 
-_dot(a::AbstractArray{<:Number}, b::AbstractArray{<:Number}) =
-    dot(a, b)
-_dot(a::GenericImage, b::GenericImage) =
-    mapreduce(xy->dotc(xy...), +, zip(a, b))
+_dot(a::AbstractArray{<:Number}, b::AbstractArray{<:Number}) = dot(a, b)
+_dot(a::GenericImage, b::GenericImage) = mapreduce(xy->dotc(xy...), +, zip(a, b))
 
 @doc (@doc NCC)
 ncc(a::GenericImage, b::GenericImage) = NCC()(a, b)
