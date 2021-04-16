@@ -10,8 +10,8 @@ const UnionMetrics = Distances.UnionMetrics
 # (N0f8      , Gray{N0f8}) -> (Float32, Float32)
 # (N0f8      , N0f8      ) -> (Float32, Float32)
 #
-# For Color3, only promote storage type; basic operation such as `abs2`
-# returns a `Number` for `Color3`(e.g., `RGB`)
+# For AbstractRGB, only promote storage type; basic operation such as `abs2`
+# returns a `Number` for `AbstractRGB`(e.g., `RGB`)
 #
 # (RGB{N0f8}, RGB{N0f8}) -> (RGB{Float32}, RGB{Float32} )
 #
@@ -30,14 +30,13 @@ for M in metrics
         end
     end
     @eval function Distances.eval_op(d::$M,
-                                     a::Color3{<:PromoteType},
-                                     b::Color3{<:PromoteType})
+                                     a::AbstractRGB{<:PromoteType},
+                                     b::AbstractRGB{<:PromoteType})
         CT1 = floattype(typeof(a))
         CT2 = floattype(typeof(b))
         Distances.eval_op(d, CT1(a), CT2(b))
     end
 end
-
 
 # ambiguities
 for (ATa, ATb) in ((AbstractGray, AbstractGray),
