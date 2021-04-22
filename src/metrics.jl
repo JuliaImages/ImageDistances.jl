@@ -37,20 +37,27 @@ mean squared error(mse) is calculated by [`ssd`](@ref)`(x, y)/length(x)`
 struct MeanSquaredError <: Metric end
 
 @doc raw"""
-    NCC <: Metric
-    ncc(x, y)
+    ZNCC <: PreMetric
+    zncc(x, y)
 
-Normalized Cross-correlation(ncc) is calculated by `dot(mean(x),mean(y))/(norm(mean(x))*norm(mean(y)))`
+Zero-mean Normalized Cross-correlation(ZNCC) is calculated by `dot(x,y)/(norm(x)*norm(y))`:
 
 ```math
 \frac{<\bar{x}, \bar{y}>}{||\bar{x}||*||\bar{y}||}
 ```
 
+where `x`/`y` are zero-meaned, i.e., `x := x - mean(x)`.
+
 !!! info
 
-    NCC isn't a Metric because `ncc(x, x) == 1.0`
+    ZNCC isn't a `Metric` because `zncc(x, x) == 1.0`. ZNCC might output `NaN` if any of the input
+    array is all-zero.
+
+# References
+
+[1] Nakhmani, Arie, and Allen Tannenbaum. "A new distance measure based on generalized image normalized cross-correlation for robust video tracking and image recognition." _Pattern recognition letters_ 34.3 (2013): 315-321.
 """
-struct NCC <: PreMetric end
+struct ZNCC <: PreMetric end
 
 @doc raw"""
     RootMeanSquaredError <: Metric
@@ -103,20 +110,20 @@ const ssdn = mse
 @doc (@doc RootMeanSquaredError)
 rmse(a::GenericImage, b::GenericImage) = RootMeanSquaredError()(a, b)
 
-# NCC
-function (::NCC)(a::GenericGrayImage, b::GenericGrayImage)
+# ZNCC
+function (::ZNCC)(a::GenericGrayImage, b::GenericGrayImage)
     A = channelview(of_eltype(floattype(eltype(a)), a))
     B = channelview(of_eltype(floattype(eltype(b)), b))
-    return _ncc(A, B)
+    return _zncc(A, B)
 end
 
-function (::NCC)(a::AbstractArray{<:Color3}, b::AbstractArray{<:Color3})
+function (::ZNCC)(a::AbstractArray{<:Color3}, b::AbstractArray{<:Color3})
     A = of_eltype(floattype(eltype(a)), a)
     B = of_eltype(floattype(eltype(b)), b)
-    return _ncc(A, B)
+    return _zncc(A, B)
 end
 
-function _ncc(A::GenericImage, B::GenericImage)
+function _zncc(A::GenericImage, B::GenericImage)
     Am = @view (A.-mean(A))[:]
     Bm = @view (B.-mean(B))[:]
     # _norm is a patch for ColorVectorSpace 0.9
@@ -126,5 +133,5 @@ end
 _dot(a::AbstractArray{<:Number}, b::AbstractArray{<:Number}) = dot(a, b)
 _dot(a::GenericImage, b::GenericImage) = mapreduce(xy->dotc(xy...), +, zip(a, b))
 
-@doc (@doc NCC)
-ncc(a::GenericImage, b::GenericImage) = NCC()(a, b)
+@doc (@doc ZNCC)
+zncc(a::GenericImage, b::GenericImage) = ZNCC()(a, b)

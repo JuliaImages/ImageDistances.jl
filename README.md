@@ -50,7 +50,7 @@ However, for `Color3` images such as `RGB`, it's noteworthy that the following r
 different in general.
 
 ```julia
-d = NCC()
+d = ZNCC()
 imgA = testimage("lena_color_512")
 imgB = testimage("fabio_color_512")
 # distance of each pixel is calculated first, and then sum up all pixels
@@ -96,7 +96,7 @@ pairwise(d, imgsA)
 |  MeanAbsoluteError      |  `mae(x, y)`, `sadn(x, y)` | `sum(abs(x - y))/len(x)`          |
 |  MeanSquaredError       |  `mse(x, y)`, `ssdn(x, y)` | `sum((x - y).^2)/len(x)`          |
 |  RootMeanSquaredError   |  `rmse(x, y)`              | `sqrt(sum((x - y) .^ 2)/len(x))`  |
-|  NCC                    |  `ncc(x, y)`               | `dot(x,y)/(norm(x)*norm(y))`      |
+|  ZNCC                    |  `zncc(x, y)`               | `dot(x,y)/(norm(x)*norm(y))`      |
 
 ### Image-specific Distances
 
