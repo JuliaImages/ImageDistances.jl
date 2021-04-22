@@ -27,8 +27,9 @@ include("metrics.jl")
 include("hausdorff.jl")
 include("ciede2000.jl")
 include("compat.jl")
+include("deprecated.jl")
 
-for MT in [GenericHausdorff, SumAbsoluteDifference, SumSquaredDifference, NCC, RootMeanSquaredError, MeanAbsoluteError, MeanSquaredError, CIEDE2000]
+for MT in [GenericHausdorff, SumAbsoluteDifference, SumSquaredDifference, ZNCC, RootMeanSquaredError, MeanAbsoluteError, MeanSquaredError, CIEDE2000]
     @eval Distances.result_type(::$MT, a::Type{T}, ::Type{U}) where {T<:AbstractFloat,U<:AbstractFloat} = promote_type(T, U)
 end
 
@@ -77,7 +78,7 @@ export
     MeanAbsoluteError,
     MeanSquaredError,
     RootMeanSquaredError,
-    NCC,
+    ZNCC,
 
     # helper functions
     hausdorff,
@@ -90,7 +91,7 @@ export
     mse,
     ssdn,
     rmse,
-    ncc
+    zncc
 
 """
 `ImageDistances` is an image-related distance package built based on `Distances`.
