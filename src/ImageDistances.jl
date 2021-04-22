@@ -11,7 +11,7 @@ import Distances:
     colwise!,
     pairwise
 
-using ImageCore, ColorVectorSpace
+using ImageCore
 using ImageCore.MappedArrays
 using ImageCore: GenericImage, GenericGrayImage, Pixel
 using ImageMorphology.FeatureTransform:

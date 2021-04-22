@@ -1,6 +1,6 @@
 # patch for ColorVectorSpace 0.9
 # for CVS < 0.9, we can just use the fallback solution in Distances
-if isdefined(ColorVectorSpace, :⊙)
+if isdefined(ImageCore.ColorVectorSpace, :⊙)
     # Because how abs2 calculated in color vector space is ambiguious, abs2(::RGB) is un-defined
     # since ColorVectorSpace 0.9
     # https://github.com/JuliaGraphics/ColorVectorSpace.jl/pull/131
