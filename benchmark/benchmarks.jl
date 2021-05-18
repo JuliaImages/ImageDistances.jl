@@ -4,6 +4,8 @@ using TestImages
 
 const SUITE = BenchmarkGroup()
 
+on_CI = haskey(ENV, "GITHUB_ACTIONS")
+
 function create_distances()
     dists = [
         SqEuclidean(),
