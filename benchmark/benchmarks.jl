@@ -29,6 +29,38 @@ function create_distances()
     return dists
 end
 
+#############
+# Distances #
+############
+
+SUITE["distances"] = BenchmarkGroup()
+
+function add_distances_benchmarks!(SUITE)
+
+    imgA = testimage("cameraman")
+    imgB = testimage("livingroom")
+
+    alg = Otsu()
+    imgA = binarize(imgA, alg)
+    imgB = binarize(imgA, alg)
+
+    imgC = Float32.(imgA)
+    imgD = Float32.(imgB)
+
+    dists = create_distances()
+
+    for dist in (dists)
+        Tdist = typeof(dist)
+        SUITE["distances"][Tdist] = BenchmarkGroup()
+        SUITE["distances"][Tdist]["ImageDistances.jl"] =
+            @benchmarkable evaluate($dist, $imgA, $imgB)
+        SUITE["distances"][Tdist]["Distances.jl"] =
+            @benchmarkable Distances.evaluate($dist, $imgC, $imgD)
+    end
+end
+
+add_distances_benchmarks!(SUITE)
+
 ###########
 # Colwise #
 ###########
@@ -105,3 +137,4 @@ function add_pairwise_benchmarks!(SUITE)
 end
 
 add_pairwise_benchmarks!(SUITE)
+
