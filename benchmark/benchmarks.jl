@@ -2,6 +2,7 @@ using BenchmarkTools
 using ImageDistances
 using Distances
 using TestImages
+using ImageBinarization
 
 const SUITE = BenchmarkGroup()
 
@@ -13,7 +14,7 @@ function create_distances()
         Euclidean(),
         Cityblock(),
         TotalVariation(),
-        #Minkowski(),
+        Minkowski(2),
         Hamming(),
         SumAbsoluteDifference(),
         SumSquaredDifference(),
@@ -21,8 +22,8 @@ function create_distances()
         MeanSquaredError(),
         RootMeanSquaredError(),
         ZNCC(),
-        # Hausdorff(),
-        # ModifiedHausdorff(),
+        Hausdorff(),
+        ModifiedHausdorff(),
         CIEDE2000(),
     ]
     return dists
@@ -36,13 +37,17 @@ SUITE["colwise"] = BenchmarkGroup()
 
 function add_colwise_benchmarks!(SUITE)
 
-    imgA = testimage("cameraman") # N0f8
-    imgB = testimage("livingroom") # N0f8
+    imgA = testimage("cameraman")
+    imgB = testimage("livingroom")
 
-    imgC = Float32.(imgA) # N0f8
-    imgD = Float32.(imgB) # N0f8
+    alg = Otsu()
+    imgA = binarize(imgA, alg)
+    imgB = binarize(imgA, alg)
 
-    # two lists of images
+    imgC = Float32.(imgA)
+    imgD = Float32.(imgB)
+
+    # Two lists of images
     imgsA = [imgA, imgB, imgA, imgB]
     imgsB = [imgB, imgA, imgA, imgB]
 
@@ -54,8 +59,10 @@ function add_colwise_benchmarks!(SUITE)
     for dist in (dists)
         Tdist = typeof(dist)
         SUITE["colwise"][Tdist] = BenchmarkGroup()
-        SUITE["colwise"][Tdist]["ImageDistances.jl"] = @benchmarkable colwise($dist, $imgsA, $imgsB)
-        SUITE["colwise"][Tdist]["Distances.jl"] = @benchmarkable Distances.colwise($dist, $imgsC, $imgsD)
+        SUITE["colwise"][Tdist]["ImageDistances.jl"] =
+            @benchmarkable colwise($dist, $imgsA, $imgsB)
+        SUITE["colwise"][Tdist]["Distances.jl"] =
+            @benchmarkable Distances.colwise($dist, $imgsC, $imgsD)
     end
 end
 
@@ -69,13 +76,17 @@ SUITE["pairwise"] = BenchmarkGroup()
 
 function add_pairwise_benchmarks!(SUITE)
 
-    imgA = testimage("cameraman") # N0f8
-    imgB = testimage("livingroom") # N0f8
+    imgA = testimage("cameraman")
+    imgB = testimage("livingroom")
 
-    imgC = Float32.(imgA) # N0f8
-    imgD = Float32.(imgB) # N0f8
+    alg = Otsu()
+    imgA = binarize(imgA, alg)
+    imgB = binarize(imgA, alg)
 
-    # two lists of images
+    imgC = Float32.(imgA)
+    imgD = Float32.(imgB)
+
+    # Two lists of images
     imgsA = [imgA, imgB, imgA, imgB]
     imgsB = [imgB, imgA, imgA, imgB]
 
@@ -86,8 +97,10 @@ function add_pairwise_benchmarks!(SUITE)
     for dist in (dists)
         Tdist = typeof(dist)
         SUITE["pairwise"][Tdist] = BenchmarkGroup()
-        SUITE["pairwise"][Tdist]["ImageDistances.jl"] = @benchmarkable pairwise($dist, $imgsA, $imgsB)
-        SUITE["pairwise"][Tdist]["Distances.jl"] = @benchmarkable Distances.pairwise($dist, $imgsC, $imgsD)
+        SUITE["pairwise"][Tdist]["ImageDistances.jl"] =
+            @benchmarkable pairwise($dist, $imgsA, $imgsB)
+        SUITE["pairwise"][Tdist]["Distances.jl"] =
+            @benchmarkable Distances.pairwise($dist, $imgsC, $imgsD)
     end
 end
 
