@@ -95,7 +95,7 @@ AxisWeightedHausdorff(weights::Tuple) = GenericHausdorff(MaxReduction(), MaxRedu
 
 # convert binary image to its distance transform
 function hausdorff_transform(d::GenericHausdorff, img::AbstractArray{Bool})
-    return distance_transform(feature_transform(img, d.weights), d.weights)
+    return distance_transform(_feature_transform(img, d.weights), d.weights)
 end
 function hausdorff_transform(d::GenericHausdorff, img::GenericGrayImage)
   try

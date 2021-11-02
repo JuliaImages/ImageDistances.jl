@@ -21,3 +21,11 @@ if isdefined(ImageCore.ColorVectorSpace, :⊙)
 else
     _norm(X::AbstractArray) = norm(X)
 end
+
+# depwarn fix for ImageMorphology v0.3
+# https://github.com/JuliaImages/ImageMorphology.jl/pull/47
+if isdefined(ImageMorphology, :SplitAxis)
+    _feature_transform(img, weights; kwargs...) = feature_transform(img; weights=weights, kwargs...)
+else
+    const _feature_transform = feature_transform
+end
