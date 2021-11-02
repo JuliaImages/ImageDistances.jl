@@ -14,6 +14,7 @@ import Distances:
 using ImageCore
 using ImageCore.MappedArrays
 using ImageCore: GenericImage, GenericGrayImage, Pixel
+import ImageMorphology
 using ImageMorphology.FeatureTransform:
     feature_transform,
     distance_transform
