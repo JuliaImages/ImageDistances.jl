@@ -100,7 +100,7 @@ function test_numeric(dist, a, b, T; filename=nothing)
     end
     @testset "numeric" begin
         @testset "$T" begin
-            @test_reference "$(filename).txt" Float64(dist(a, b)) by=(x,y)->isapprox(x,y; atol=1e-8)
+            @test_reference "$(filename).txt" Float64(dist(a, b)) by=(x,y)->isapprox(x,y; atol=1e-6)
         end
     end
 end
